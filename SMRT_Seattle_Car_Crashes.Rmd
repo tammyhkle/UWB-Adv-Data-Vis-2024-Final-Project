@@ -1,0 +1,13 @@
+---
+title: "Seattle Car Crashes"
+author: "Simoli Aghara, Mindy Chen, Rachel Graham, Tammy Le"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Importing Data
+```{r}
+library(readxl)
+Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
+```
+
