@@ -25,4 +25,3 @@ Seattle_Car_Crashes_long <- Seattle_Car_Crashes %>% pivot_longer(cols = everythi
 ```
 
 
-
