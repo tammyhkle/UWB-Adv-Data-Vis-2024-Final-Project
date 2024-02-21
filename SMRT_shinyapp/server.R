@@ -19,9 +19,9 @@ function(input, output, session) {
     
     # Removing NA Values from the data
     library(tidyverse)
-
+    Seattle_Car_Crashes <- na.omit(Seattle_Car_Crashes)
     Seattle_Car_Crashes <- subset(Seattle_Car_Crashes, select = -c(INCDTTM))
-    
+
     Seattle_Car_Crashes
 
   })
