@@ -29,6 +29,5 @@ function(input, output, session) {
   # Render the data as a DataTable
   output$mytable <- renderDT({
     datatable(data())
-    head(data, 10)
   })
 }
