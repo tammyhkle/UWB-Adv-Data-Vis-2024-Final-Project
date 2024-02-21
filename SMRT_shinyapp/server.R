@@ -25,10 +25,8 @@ function(input, output, session) {
     Seattle_Car_Crashes$INCDATE <- as.character.Date(Seattle_Car_Crashes$INCDATE)
     Seattle_Car_Crashes$INCDTTM <- as.character(Seattle_Car_Crashes$INCDTTM)
     Seattle_Car_Crashes <- subset(Seattle_Car_Crashes, select = -c(INCDTTM))
-    Seattle_Car_Crashes_long <- Seattle_Car_Crashes %>% 
-      pivot_longer(cols = everything(), values_drop_na = TRUE)
     
-    Seattle_Car_Crashes_long
+    Seattle_Car_Crashes
   })
   
   # Render the data as a DataTable
