@@ -17,20 +17,18 @@ function(input, output, session) {
     library(readxl)
     Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
     
-    # Wrangling the Data Set into long Format
+    # Removing NA Values from the data
     library(tidyverse)
-    Seattle_Car_Crashes$INJURIES <- as.character(Seattle_Car_Crashes$INJURIES)
-    Seattle_Car_Crashes$SERIOUSINJURIES <- as.character(Seattle_Car_Crashes$SERIOUSINJURIES)
-    Seattle_Car_Crashes$FATALITIES <- as.character(Seattle_Car_Crashes$FATALITIES)
-    Seattle_Car_Crashes$INCDATE <- as.character.Date(Seattle_Car_Crashes$INCDATE)
-    Seattle_Car_Crashes$INCDTTM <- as.character(Seattle_Car_Crashes$INCDTTM)
+
     Seattle_Car_Crashes <- subset(Seattle_Car_Crashes, select = -c(INCDTTM))
     
     Seattle_Car_Crashes
+
   })
   
   # Render the data as a DataTable
   output$mytable <- renderDT({
     datatable(data())
+    head(data, 10)
   })
 }
