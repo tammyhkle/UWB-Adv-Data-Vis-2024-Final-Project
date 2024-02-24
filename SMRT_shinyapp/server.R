@@ -23,6 +23,7 @@ function(input, output, session) {
     Seattle_Car_Crashes <- subset(Seattle_Car_Crashes, select = -c(INCDTTM))
 
     Seattle_Car_Crashes
+
   })
   
   # Render the data as a DataTable
