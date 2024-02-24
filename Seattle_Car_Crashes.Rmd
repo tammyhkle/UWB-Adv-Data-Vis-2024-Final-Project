@@ -1,5 +1,7 @@
 ---
 title: "Seattle Car Crashes"
+author: "Simoli Aghara, Mindy Chen, Rachel Graham, Tammy Le"
+date: "`r Sys.Date()
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -16,6 +18,12 @@ Column {data-width=650}
 ### Chart A
 
 ```{r}
+library(readxl)
+library(tidyverse)
+Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
+Seattle_Car_Crashes <- na.omit(Seattle_Car_Crashes)
+Seattle_Car_Crashes <- subset(Seattle_Car_Crashes, select = -c(INCDTTM))
+datatable(Seattle_Car_Crashes)
 
 ```
 
