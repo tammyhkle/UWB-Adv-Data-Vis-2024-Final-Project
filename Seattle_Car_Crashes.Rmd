@@ -13,10 +13,16 @@ runtime: shiny
 library(flexdashboard)
 ```
 
-Column {data-width=650}
------------------------------------------------------------------------
 
-### Representing the Table
+About
+===================================== 
+
+### About Section
+
+This is about Seattle Car Crashes. 
+
+Table
+===================================== 
 
 ```{r}
 library(readxl)
@@ -29,18 +35,19 @@ datatable(Seattle_Car_Crashes)
 
 ```
 
-Column {data-width=350}
------------------------------------------------------------------------
 
-### Chart B
+Geolocation
+===================================== 
 
-```{r}
+Scatter + Line
+===================================== 
 
-```
+Scatter plot: Correlation between weather conditions, daylight vs nighttime, and road conditions. - Rachel 
+Line Graph: Correlation between date, and time(daylight vs nighttime) - Simoli 
 
-### Chart C
 
-```{r}
+Scatter + Bar
+===================================== 
 
-```
-
+Bar Graph: Type of Accident and Junction and Severity - Mindy
+Scatter plot: Compare most injuries/severies to Junction (intersections) - Tammy 
