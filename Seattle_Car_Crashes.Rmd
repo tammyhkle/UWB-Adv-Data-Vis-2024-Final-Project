@@ -28,6 +28,8 @@ Table
 library(readxl)
 library(tidyverse)
 library(DT)
+library(dplyr)
+library(ggplot2)
 Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
 Seattle_Car_Crashes <- na.omit(Seattle_Car_Crashes)
 Seattle_Car_Crashes <- subset(Seattle_Car_Crashes, select = -c(INCDTTM))
@@ -43,7 +45,48 @@ Scatter + Line
 ===================================== 
 
 Scatter plot: Correlation between weather conditions, daylight vs nighttime, and road conditions. - Rachel 
-Line Graph: Correlation between date, and time(daylight vs nighttime) - Simoli 
+Line Graph: Correlation between date, and time(daylight vs nighttime) - Simoli
+
+```{r chartspage4}
+Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
+  mutate(Weather_Combined = case_when(
+    WEATHER %in% c("Clear", "Overcast", "Partly Cloudy") ~ "Clear",
+    WEATHER %in% c("Fog/Smog/Smoke") ~ "Fog",
+    WEATHER %in% c("Raining", "Sleet/Hail/Freezing Rain") ~ "Rain",
+    WEATHER %in% c("Snowing", "Blowing Snow") ~ "Snow",
+    WEATHER %in% c("Other", "Blowing Sand/Dirt", "Severe Crosswind") ~ "Other",
+    TRUE ~ WEATHER  # Keep other values unchanged
+  )) %>%
+
+  mutate(Light_Combined = case_when(
+    LIGHTCOND == "Daylight" ~ "Daylight",
+    LIGHTCOND %in% c("Dawn", "Dusk") ~ "Dawn/Dusk",
+    LIGHTCOND %in% c("Dark - Street Lights On", "Dark - Unknown Lighting", "Dark - Street Lights Off", "Dark - No Street Lights") ~ "Dark",
+    TRUE ~ LIGHTCOND  # Keep other values unchanged
+  )) %>%
+  
+  mutate(Road_Combined = case_when(
+    ROADCOND == "Dry" ~ "Dry",
+    ROADCOND %in% c("Wet", "Standing Water", "Snow/Slush", "Sand/Mud/Dirt", "Oil") ~ "Wet",
+    ROADCOND == c("Ice") ~ "Ice",
+    TRUE ~ ROADCOND  # Keep other values unchanged
+  )) %>%
+  
+  # Filter out rows with "Unknown" or "Other" values in the specified columns
+  filter(WEATHER != "Unknown" & LIGHTCOND != "Unknown" & LIGHTCOND != "Other" & ROADCOND != "Unknown" & ROADCOND != "Other")
+
+crash_counts <- Seattle_Car_Crashes %>%
+  group_by(Weather_Combined, Light_Combined, Road_Combined) %>%
+  summarise(Count = n())
+
+# Plot
+ggplot(crash_counts, aes(x = Weather_Combined, y = Count, color = Light_Combined, shape = Road_Combined)) +
+  geom_point(size = 3) +
+  labs(x = "Weather Condition", y = "Number of Car Crashes", color = "Light Condition", shape = "Road Condition") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+
+```
 
 
 Scatter + Bar
