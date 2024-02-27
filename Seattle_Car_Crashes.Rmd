@@ -30,6 +30,7 @@ library(tidyverse)
 library(DT)
 library(dplyr)
 library(ggplot2)
+library(plotly)
 library(shiny)
 Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
 Seattle_Car_Crashes <- na.omit(Seattle_Car_Crashes)
@@ -48,45 +49,60 @@ Scatter + Line
 Scatter plot: Correlation between weather conditions, daylight vs nighttime, and road conditions. - Rachel 
 Line Graph: Correlation between date, and time(daylight vs nighttime) - Simoli
 
-```{r chartspage4}
-Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
-  mutate(Weather_Combined = case_when(
-    WEATHER %in% c("Clear", "Overcast", "Partly Cloudy") ~ "Clear",
-    WEATHER %in% c("Fog/Smog/Smoke") ~ "Fog",
-    WEATHER %in% c("Raining", "Sleet/Hail/Freezing Rain") ~ "Rain",
-    WEATHER %in% c("Snowing", "Blowing Snow") ~ "Snow",
-    WEATHER %in% c("Other", "Blowing Sand/Dirt", "Severe Crosswind") ~ "Other",
-    TRUE ~ WEATHER  # Keep other values unchanged
-  )) %>%
+```{r}
+ui <- fluidPage(
+  titlePanel("Seattle Car Crashes Weather, Road, and Light Conditions"),
+  fluidRow(
+    column(
+      width = 12,
+      plotlyOutput("crash_plot", width = "100%", height = "600px")
+    )
+  )
+)
 
-  mutate(Light_Combined = case_when(
-    LIGHTCOND == "Daylight" ~ "Daylight",
-    LIGHTCOND %in% c("Dawn", "Dusk") ~ "Dawn/Dusk",
-    LIGHTCOND %in% c("Dark - Street Lights On", "Dark - Unknown Lighting", "Dark - Street Lights Off", "Dark - No Street Lights") ~ "Dark",
-    TRUE ~ LIGHTCOND  # Keep other values unchanged
-  )) %>%
-  
-  mutate(Road_Combined = case_when(
-    ROADCOND == "Dry" ~ "Dry",
-    ROADCOND %in% c("Wet", "Standing Water", "Snow/Slush", "Sand/Mud/Dirt", "Oil") ~ "Wet",
-    ROADCOND == c("Ice") ~ "Ice",
-    TRUE ~ ROADCOND  # Keep other values unchanged
-  )) %>%
-  
-  # Filter out rows with "Unknown" or "Other" values in the specified columns
-  filter(WEATHER != "Unknown" & LIGHTCOND != "Unknown" & LIGHTCOND != "Other" & ROADCOND != "Unknown" & ROADCOND != "Other")
+server <- function(input, output) {
+  # Data processing
+  Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
+    mutate(Weather_Combined = case_when(
+      WEATHER %in% c("Clear", "Overcast", "Partly Cloudy") ~ "Clear",
+      WEATHER %in% c("Fog/Smog/Smoke") ~ "Fog",
+      WEATHER %in% c("Raining", "Sleet/Hail/Freezing Rain") ~ "Rain",
+      WEATHER %in% c("Snowing", "Blowing Snow") ~ "Snow",
+      WEATHER %in% c("Other", "Blowing Sand/Dirt", "Severe Crosswind") ~ "Other",
+      TRUE ~ WEATHER  # Keep other values unchanged
+    )) %>%
+    mutate(Light_Combined = case_when(
+      LIGHTCOND == "Daylight" ~ "Daylight",
+      LIGHTCOND %in% c("Dawn", "Dusk") ~ "Dawn/Dusk",
+      LIGHTCOND %in% c("Dark - Street Lights On", "Dark - Unknown Lighting", "Dark - Street Lights Off", "Dark - No Street Lights") ~ "Dark",
+      TRUE ~ LIGHTCOND  # Keep other values unchanged
+    )) %>%
+    mutate(Road_Combined = case_when(
+      ROADCOND == "Dry" ~ "Dry",
+      ROADCOND %in% c("Wet", "Standing Water", "Snow/Slush", "Sand/Mud/Dirt", "Oil") ~ "Wet",
+      ROADCOND == c("Ice") ~ "Ice",
+      TRUE ~ ROADCOND  # Keep other values unchanged
+    )) %>%
+    filter(WEATHER != "Unknown" & LIGHTCOND != "Unknown" & LIGHTCOND != "Other" & ROADCOND != "Unknown" & ROADCOND != "Other")
 
-crash_counts <- Seattle_Car_Crashes %>%
-  group_by(Weather_Combined, Light_Combined, Road_Combined) %>%
-  summarise(Count = n())
+  # Calculate the count of car crashes for each combination
+  crash_counts <- Seattle_Car_Crashes %>%
+    group_by(Weather_Combined, Light_Combined, Road_Combined) %>%
+    summarise(Count = n())
 
-# Plot
-ggplot(crash_counts, aes(x = Weather_Combined, y = Count, color = Light_Combined, shape = Road_Combined)) +
-  geom_point(size = 3) +
-  labs(x = "Weather Condition", y = "Number of Car Crashes", color = "Light Condition", shape = "Road Condition") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels for better readability
+  # Output the interactive plot
+  output$crash_plot <- renderPlotly({
+    p <- ggplot(crash_counts, aes(x = Weather_Combined, y = Count, color = Light_Combined, shape = Road_Combined, text = paste("Weather:", Weather_Combined, "<br>Light:", Light_Combined, "<br>Road:", Road_Combined, "<br>Crashes:", Count))) +
+      geom_point(size = 3) +
+      labs(x = "Weather Condition", y = "Number of Car Crashes", color = "Light Condition", shape = "Road Condition") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    
+    ggplotly(p, tooltip = "text")
+  })
+}
 
+shinyApp(ui = ui, server = server)
 ```
 
 ```{r}
