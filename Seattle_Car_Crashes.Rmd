@@ -30,6 +30,7 @@ library(tidyverse)
 library(DT)
 library(dplyr)
 library(ggplot2)
+library(shiny)
 Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
 Seattle_Car_Crashes <- na.omit(Seattle_Car_Crashes)
 Seattle_Car_Crashes <- subset(Seattle_Car_Crashes, select = -c(INCDTTM))
@@ -88,6 +89,52 @@ ggplot(crash_counts, aes(x = Weather_Combined, y = Count, color = Light_Combined
 
 ```
 
+```{r}
+# Separating the date column from the dataset
+Seattle_Car_Crashes_Date <- Seattle_Car_Crashes %>%
+  mutate(year = year(INCDATE), month = month(INCDATE))
+
+# Counting the total number of accidents happened in a particular month
+total_accident <- Seattle_Car_Crashes_Date %>%
+  group_by(LIGHTCOND, year, month) %>%
+  summarise(Number_Accidents = n())
+
+# Making the graph interactive
+ui <- fluidPage(
+
+  # Giving the title to the graph
+  titlePanel("Car Crashes by Light Condition over Time"),
+  
+  # Lets the user choose which year they want to view
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("year", "Select Year", choices = unique(total_accident$year))
+    ),
+    
+    # The output
+    mainPanel(
+      plotOutput("plot")
+    )
+  )
+)
+
+server <- function(input, output) {
+  # Creating the data with the year selected by the user
+  data <- reactive({
+    filter(total_accident, year == input$year)
+  })
+  
+
+  output$plot <- renderPlot({
+    # Creating the plot
+    ggplot(data(), aes(x = paste(year, month, sep = "-"), y = Number_Accidents, group = LIGHTCOND, color = LIGHTCOND)) +
+      geom_line() +
+      labs(x = "Year-Month", y = "Number of Accidents", title = paste("Car Crashes by Light Condition in", input$year))
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
 
 Scatter + Bar
 ===================================== 
