@@ -19,6 +19,7 @@ library(ggmap)
 library(ggplot2)
 library(plotly)
 library(shiny)
+library(leaflet)
 ```
 
 
@@ -156,7 +157,7 @@ server <- function(input, output) {
   })
   
   output$plot <- renderPlotly({
-     lightcond_colors <- c("Daylight" = "blue", "Dark - Street Lights On" = "green", "Dusk" = "orange", "Dawn" = "red", "Dark - No Street Lights" = "purple", "Dark - Street Lights Off" = "brown", "Unknown" = "gray")
+     lightcond_colors <- c("Daylight" = "blue", "Dark - Street Lights On" = "green", "Dusk" = "orange", "Dawn" = "red", "Dark - No Street Lights" = "purple", "Dark - Street Lights Off" = "brown", "Unknown" = "gray", "Other" = "black")
     # Creating the plot
     p <- ggplot(data(), aes(x = month, y = Number_Accidents, group = LIGHTCOND, color = LIGHTCOND)) +
       geom_line() +
@@ -165,7 +166,13 @@ server <- function(input, output) {
        scale_color_manual(values = lightcond_colors) + 
       theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels by 45 degrees
     
-    ggplotly(p)
+    p <- ggplotly(p)
+    
+    # Customize layout to display legend separately
+    p <- layout(p, legend = list(orientation = "v", x = 1, y = 1, bgcolor = "white", width = 100, font = list(size = 10)))
+    
+    p
+
   })
 }
 
