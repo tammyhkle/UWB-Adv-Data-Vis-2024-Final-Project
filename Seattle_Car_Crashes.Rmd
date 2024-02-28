@@ -106,18 +106,8 @@ shinyApp(ui = ui, server = server)
 ```
 
 ```{r Line Graph}
-# Separating the date column from the dataset
-Seattle_Car_Crashes_Date <- Seattle_Car_Crashes %>%
-  mutate(year = year(INCDATE), month = month(INCDATE))
-
-# Counting the total number of accidents happened in a particular month
-total_accident <- Seattle_Car_Crashes_Date %>%
-  group_by(LIGHTCOND, year, month) %>%
-  summarise(Number_Accidents = n())
-
-# Making the graph interactive
 ui <- fluidPage(
-
+  
   # Giving the title to the graph
   titlePanel("Car Crashes by Light Condition over Time"),
   
@@ -130,13 +120,13 @@ ui <- fluidPage(
     # The output
     mainPanel(
       fluidRow(
-    column(
-      width = 12,
-      plotlyOutput("plot", width = "100%", height = "600px")
-    )
+        column(
+          width = 12,
+          plotlyOutput("plot", width = "100%", height = "600px")
+        )
+      )
     )
   )
-)
 )
 
 server <- function(input, output) {
@@ -145,12 +135,15 @@ server <- function(input, output) {
     filter(total_accident, year == input$year)
   })
   
-
-  output$plot <- renderPlot({
+  output$plot <- renderPlotly({
     # Creating the plot
-    ggplot(data(), aes(x = paste(year, month, sep = "-"), y = Number_Accidents, group = LIGHTCOND, color = LIGHTCOND)) +
+    p <- ggplot(data(), aes(x = paste(year, month, sep = "-"), y = Number_Accidents, group = LIGHTCOND, color = LIGHTCOND)) +
       geom_line() +
-      labs(x = "Year-Month", y = "Number of Accidents", title = paste("Car Crashes by Light Condition in", input$year))
+      labs(x = "Year-Month", y = "Number of Accidents", title = paste("Car Crashes by Light Condition in", input$year)) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels by 45 degrees
+    
+    ggplotly(p) %>%
+      layout(autosize = TRUE)  # Enable autosize to adjust plot width
   })
 }
 
