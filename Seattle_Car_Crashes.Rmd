@@ -44,10 +44,8 @@ Geolocation
 ===================================== 
 
 
-Scatter + Line
+Scatter
 ===================================== 
-
-
 
 ```{r Scatter Plot}
 ui <- fluidPage(
@@ -105,6 +103,9 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 
+Line
+===================================== 
+
 ```{r Line Graph}
 # Separating the date column from the dataset
 Seattle_Car_Crashes_Date <- Seattle_Car_Crashes %>%
@@ -124,7 +125,12 @@ ui <- fluidPage(
   # Lets the user choose which year they want to view
   sidebarLayout(
     sidebarPanel(
-      selectInput("year", "Select Year", choices = unique(total_accident$year))
+      fluidRow(
+        column(
+          width = 8,
+          selectInput("year","Select Year",choices = unique(total_accident$year))
+        )
+      )
     ),
     
     # The output
@@ -132,7 +138,7 @@ ui <- fluidPage(
       fluidRow(
         column(
           width = 12,
-          plotlyOutput("plot", width = "100%", height = "600px")
+          plotlyOutput("plot", width = "90%", height = "600px")
         )
       )
     )
@@ -160,9 +166,8 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 
-Scatter + Bar
+Scatter
 ===================================== 
-
 
 ```{r Scatter_Plot2}
 # Read the dataset from Excel file
@@ -206,3 +211,6 @@ server <- function(input, output) {
 # run the application
 shinyApp(ui = ui, server = server)
 ```
+
+Bar
+===================================== 
