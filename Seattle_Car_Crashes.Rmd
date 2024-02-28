@@ -183,4 +183,18 @@ ui <- fluidPage(
   )
 )
 
+# server logic
+server <- function(input, output) {
+  # Output the interactive plot
+  output$crash_plot <- renderPlotly({
+    p <- ggplot(Seattle_Car_Crashes, aes(x = SEVERITYCODE, y = INJURIES, color = JUNCTIONTYPE)) +
+      geom_point() +
+      labs(x = "Severity Level", y = "# of Injuries", color = "Junction Type") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    
+    ggplotly(p)
+  })
+}
+
 ```
