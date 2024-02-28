@@ -46,6 +46,22 @@ Geolocation
 # Read the dataset from Excel file
 Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
 
+# print column names of the dataset
+print(colnames(Seattle_Car_Crashes))
+
+# convert "Location" column to character type
+if ("Location" %in% colnames(Seattle_Car_Crashes)) {
+  Seattle_Car_Crashes$Location <- as.character(Seattle_Car_Crashes$Location)
+} else {
+  stop("Column 'Location' not found in the dataset.")
+}
+
+# extract addresses from the "Location" column
+addresses <- Seattle_Car_Crashes$Location
+
+# print
+print(head(addresses))  # Check the first few addresses
+
 ```
 
 Scatter + Line
