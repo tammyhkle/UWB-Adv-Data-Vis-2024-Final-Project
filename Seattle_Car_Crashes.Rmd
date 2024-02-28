@@ -43,6 +43,10 @@ datatable(Seattle_Car_Crashes)
 Geolocation
 ===================================== 
 
+```{r GeoLocation}
+
+```
+
 
 Scatter
 ===================================== 
@@ -108,7 +112,7 @@ Line
 
 ```{r Line Graph}
 # Separating the date column from the dataset
-Seattle_Car_Crashes_Date <- Seattle_Car_Crashes %>%
+Seattle_Car_Crashes_Date <- Seattle_Car_Crashes %>% select(INCDATE, LIGHTCOND) %>% drop_na() %>%
   mutate(year = year(INCDATE), month = month(INCDATE))
 
 # Counting the total number of accidents happened in a particular month
@@ -124,7 +128,7 @@ ui <- fluidPage(
   
   # Lets the user choose which year they want to view
   sidebarLayout(
-    sidebarPanel(
+    mainPanel(
       fluidRow(
         column(
           width = 8,
@@ -138,7 +142,7 @@ ui <- fluidPage(
       fluidRow(
         column(
           width = 12,
-          plotlyOutput("plot", width = "90%", height = "600px")
+          plotlyOutput("plot", width = "150%", height = "600px")
         )
       )
     )
@@ -153,13 +157,13 @@ server <- function(input, output) {
   
   output$plot <- renderPlotly({
     # Creating the plot
-    p <- ggplot(data(), aes(x = paste(year, month, sep = "-"), y = Number_Accidents, group = LIGHTCOND, color = LIGHTCOND)) +
+    p <- ggplot(data(), aes(x = month, y = Number_Accidents, group = LIGHTCOND, color = LIGHTCOND)) +
       geom_line() +
+      scale_x_discrete(limits = 1:12, labels = month.abb) +
       labs(x = "Year-Month", y = "Number of Accidents", title = paste("Car Crashes by Light Condition in", input$year)) +
       theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels by 45 degrees
     
-    ggplotly(p) %>%
-      layout(autosize = TRUE)  # Enable autosize to adjust plot width
+    ggplotly(p)
   })
 }
 
