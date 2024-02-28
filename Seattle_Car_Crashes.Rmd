@@ -172,4 +172,15 @@ valid_junction_types <- c("At Intersection (but not related to intersection)",
 Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
   filter(JUNCTIONTYPE %in% valid_junction_types)
 
+# UI
+ui <- fluidPage(
+  titlePanel("Seattle Car Crashes: # of Injuries and Severity Level at which Junction"),
+  fluidRow(
+    column(
+      width = 12,
+      plotlyOutput("crash_plot", width = "97%", height = "600px")
+    )
+  )
+)
+
 ```
