@@ -163,4 +163,13 @@ Tammy Le (Scatter Plot):
 # Read the dataset from Excel file
 Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
 
+# Filter out rows with unknown or irrelevant junction types
+valid_junction_types <- c("At Intersection (but not related to intersection)",
+                          "At Intersection (intersection related)",
+                          "Driveway Junction",
+                          "Mid-Block (but intersection related)",
+                          "Mid-Block (not related to intersection)")
+Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
+  filter(JUNCTIONTYPE %in% valid_junction_types)
+
 ```
