@@ -106,6 +106,16 @@ shinyApp(ui = ui, server = server)
 ```
 
 ```{r Line Graph}
+# Separating the date column from the dataset
+Seattle_Car_Crashes_Date <- Seattle_Car_Crashes %>%
+  mutate(year = year(INCDATE), month = month(INCDATE))
+
+# Counting the total number of accidents happened in a particular month
+total_accident <- Seattle_Car_Crashes_Date %>%
+  group_by(LIGHTCOND, year, month) %>%
+  summarise(Number_Accidents = n())
+
+# Making the graph interactive
 ui <- fluidPage(
   
   # Giving the title to the graph
