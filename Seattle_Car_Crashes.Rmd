@@ -42,58 +42,7 @@ datatable(Seattle_Car_Crashes)
 
 Geolocation
 ===================================== 
-```{r}
 
-# google API??? or library(opencage) <- Free API?
-
-library(plotly)
-library(readxl)
-library(ggmap)
-
-# read the dataset from Excel file
-Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
-
-# extract addresses from the "LOCATION" column
-addresses <- Seattle_Car_Crashes$LOCATION
-
-# initialize empty vectors to store latitude and longitude
-lat <- numeric(length(addresses))
-lon <- numeric(length(addresses))
-
-# geocode each address using ggmap -> this is because we dont have longitude and latitude..
-for (i in seq_along(addresses)) {
-  # Geocode the address
-  result <- geocode(addresses[i])
-  
-  # Extract latitude and longitude
-  if (!is.na(result$lon) && !is.na(result$lat)) {
-    lat[i] <- result$lat
-    lon[i] <- result$lon
-  } else {
-    cat("Geocoding failed for address:", addresses[i], "\n")
-  }
-}
-
-# combine geocoded data with original collision data
-collision_data <- cbind(Seattle_Car_Crashes, lat, lon)
-
-# create bubble map
-fig <- plot_ly(data = collision_data, type = 'scattergeo', mode = 'markers',
-               lon = ~lon, lat = ~lat,
-               marker = list(size = 10, color = 'blue'),
-               text = ~paste("Location: ", LOCATION))
-
-# customize layout
-fig <- fig %>% layout(title = 'Seattle Car Crashes',
-                      geo = list(scope = 'usa', projection = list(type = 'albers usa'),
-                                 showland = TRUE, landcolor = toRGB("gray85"),
-                                 subunitwidth = 1, countrywidth = 1,
-                                 subunitcolor = toRGB("white"), countrycolor = toRGB("white")))
-
-# display the bubble map
-fig
-
-```
 
 Scatter + Line
 ===================================== 
