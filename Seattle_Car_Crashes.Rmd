@@ -156,11 +156,13 @@ server <- function(input, output) {
   })
   
   output$plot <- renderPlotly({
+     lightcond_colors <- c("Daylight" = "blue", "Dark - Street Lights On" = "green", "Dusk" = "orange", "Dawn" = "red", "Dark - No Street Lights" = "purple", "Dark - Street Lights Off" = "brown", "Unknown" = "gray")
     # Creating the plot
     p <- ggplot(data(), aes(x = month, y = Number_Accidents, group = LIGHTCOND, color = LIGHTCOND)) +
       geom_line() +
       scale_x_discrete(limits = 1:12, labels = month.abb) +
       labs(x = "Year-Month", y = "Number of Accidents", title = paste("Car Crashes by Light Condition in", input$year)) +
+       scale_color_manual(values = lightcond_colors) + 
       theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels by 45 degrees
     
     ggplotly(p)
