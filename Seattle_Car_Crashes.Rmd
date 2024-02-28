@@ -156,4 +156,11 @@ Scatter + Bar
 ===================================== 
 
 Bar Graph: Type of Accident and Junction and Severity - Mindy
-Scatter plot: Compare most injuries/severies to Junction (intersections) - Tammy 
+Scatter plot: Compare # of Injuries to Severity and Type of Junction (intersections) - Tammy 
+
+Tammy Le (Scatter Plot):
+```{r}
+# Read the dataset from Excel file
+Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
+
+```
