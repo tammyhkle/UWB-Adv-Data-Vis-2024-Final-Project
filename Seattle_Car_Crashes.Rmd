@@ -44,10 +44,8 @@ Geolocation
 ===================================== 
 
 
-Scatter + Line
+Scatter
 ===================================== 
-
-
 
 ```{r Scatter Plot}
 ui <- fluidPage(
@@ -105,6 +103,9 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 
+Line
+===================================== 
+
 ```{r Line Graph}
 # Separating the date column from the dataset
 Seattle_Car_Crashes_Date <- Seattle_Car_Crashes %>%
@@ -160,9 +161,8 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 
-Scatter + Bar
+Scatter
 ===================================== 
-
 
 ```{r Scatter_Plot2}
 # Read the dataset from Excel file
@@ -206,3 +206,6 @@ server <- function(input, output) {
 # run the application
 shinyApp(ui = ui, server = server)
 ```
+
+Bar
+===================================== 
