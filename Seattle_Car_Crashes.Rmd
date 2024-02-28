@@ -11,6 +11,14 @@ runtime: shiny
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+library(readxl)
+library(tidyverse)
+library(DT)
+library(dplyr)
+library(ggmap)
+library(ggplot2)
+library(plotly)
+library(shiny)
 ```
 
 
@@ -24,15 +32,7 @@ This is about Seattle Car Crashes.
 Table
 ===================================== 
 
-```{r}
-library(readxl)
-library(tidyverse)
-library(DT)
-library(dplyr)
-library(ggmap)
-library(ggplot2)
-library(plotly)
-library(shiny)
+```{r Reading and Displaying Data}
 Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
 Seattle_Car_Crashes <- na.omit(Seattle_Car_Crashes)
 Seattle_Car_Crashes <- subset(Seattle_Car_Crashes, select = -c(INCDTTM))
@@ -47,10 +47,9 @@ Geolocation
 Scatter + Line
 ===================================== 
 
-Scatter plot: Correlation between weather conditions, daylight vs nighttime, and road conditions. - Rachel 
-Line Graph: Correlation between date, and time(daylight vs nighttime) - Simoli
 
-```{r}
+
+```{r Scatter Plot}
 ui <- fluidPage(
   titlePanel("Seattle Car Crashes Weather, Road, and Light Conditions"),
   fluidRow(
@@ -106,7 +105,7 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 
-```{r}
+```{r Line Graph}
 # Separating the date column from the dataset
 Seattle_Car_Crashes_Date <- Seattle_Car_Crashes %>%
   mutate(year = year(INCDATE), month = month(INCDATE))
@@ -130,9 +129,14 @@ ui <- fluidPage(
     
     # The output
     mainPanel(
-      plotOutput("plot")
+      fluidRow(
+    column(
+      width = 12,
+      plotlyOutput("plot", width = "100%", height = "600px")
+    )
     )
   )
+)
 )
 
 server <- function(input, output) {
@@ -156,11 +160,8 @@ shinyApp(ui = ui, server = server)
 Scatter + Bar
 ===================================== 
 
-Bar Graph: Type of Accident and Junction and Severity - Mindy
-Scatter plot: Compare # of Injuries to Severity and Type of Junction (intersections) - Tammy 
 
-Tammy Le (Scatter Plot):
-```{r}
+```{r Scatter_Plot2}
 # Read the dataset from Excel file
 Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
 
