@@ -125,7 +125,12 @@ ui <- fluidPage(
   # Lets the user choose which year they want to view
   sidebarLayout(
     sidebarPanel(
-      selectInput("year", "Select Year", choices = unique(total_accident$year))
+      fluidRow(
+        column(
+          width = 8,
+          selectInput("year","Select Year",choices = unique(total_accident$year))
+        )
+      )
     ),
     
     # The output
@@ -133,7 +138,7 @@ ui <- fluidPage(
       fluidRow(
         column(
           width = 12,
-          plotlyOutput("plot", width = "100%", height = "600px")
+          plotlyOutput("plot", width = "90%", height = "600px")
         )
       )
     )
