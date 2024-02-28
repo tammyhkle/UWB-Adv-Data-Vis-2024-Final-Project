@@ -55,7 +55,7 @@ ui <- fluidPage(
   fluidRow(
     column(
       width = 12,
-      plotlyOutput("crash_plot", width = "100%", height = "600px")
+      plotlyOutput("crash_plot", width = "90%", height = "600px")
     )
   )
 )
