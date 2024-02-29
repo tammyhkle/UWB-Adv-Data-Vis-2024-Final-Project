@@ -19,6 +19,7 @@ library(ggmap)
 library(ggplot2)
 library(plotly)
 library(shiny)
+library(lubridate)
 ```
 
 
@@ -48,17 +49,34 @@ Scatter
 ===================================== 
 
 ```{r Scatter Plot}
+Seattle_Car_Crashes_Date <- Seattle_Car_Crashes %>%
+  mutate(year = year(INCDATE), month = month(INCDATE))
+
+total_accident <- Seattle_Car_Crashes_Date %>%
+  group_by(year, month, WEATHER, ROADCOND) %>%
+  summarise(Number_Accidents = n())
+
 ui <- fluidPage(
-  titlePanel("Seattle Car Crashes Weather, Road, and Light Conditions"),
+  titlePanel("Seattle Car Crashes Weather and Road Conditions by Year"),
+  
   fluidRow(
     column(
-      width = 12,
-      plotlyOutput("crash_plot", width = "90%", height = "600px")
+          width = 8,
+          selectInput("year","Select Year",choices = unique(total_accident$year))
+      )
+  ),
+
+  fluidRow(
+    column(
+          width = 12,
+          plotlyOutput("plot", width = "90%", height = "600px")
     )
   )
 )
 
 server <- function(input, output) {
+  Seattle_Car_Crashes_Date <- Seattle_Car_Crashes %>%
+    mutate(year = year(INCDATE), month = month(INCDATE))
   # Data processing
   Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
     mutate(Weather_Combined = case_when(
@@ -69,32 +87,34 @@ server <- function(input, output) {
       WEATHER %in% c("Other", "Blowing Sand/Dirt", "Severe Crosswind") ~ "Other",
       TRUE ~ WEATHER  # Keep other values unchanged
     )) %>%
-    mutate(Light_Combined = case_when(
-      LIGHTCOND == "Daylight" ~ "Daylight",
-      LIGHTCOND %in% c("Dawn", "Dusk") ~ "Dawn/Dusk",
-      LIGHTCOND %in% c("Dark - Street Lights On", "Dark - Unknown Lighting", "Dark - Street Lights Off", "Dark - No Street Lights") ~ "Dark",
-      TRUE ~ LIGHTCOND  # Keep other values unchanged
-    )) %>%
     mutate(Road_Combined = case_when(
       ROADCOND == "Dry" ~ "Dry",
       ROADCOND %in% c("Wet", "Standing Water", "Snow/Slush", "Sand/Mud/Dirt", "Oil") ~ "Wet",
       ROADCOND == c("Ice") ~ "Ice",
       TRUE ~ ROADCOND  # Keep other values unchanged
     )) %>%
-    filter(WEATHER != "Unknown" & LIGHTCOND != "Unknown" & LIGHTCOND != "Other" & ROADCOND != "Unknown" & ROADCOND != "Other")
+    filter(WEATHER != "Unknown" & ROADCOND != "Unknown" & ROADCOND != "Other")
 
-  # Calculate the count of car crashes for each combination
-  crash_counts <- Seattle_Car_Crashes %>%
-    group_by(Weather_Combined, Light_Combined, Road_Combined) %>%
-    summarise(Count = n())
 
   # Output the interactive plot
-  output$crash_plot <- renderPlotly({
-    p <- ggplot(crash_counts, aes(x = Weather_Combined, y = Count, color = Light_Combined, shape = Road_Combined, text = paste("Weather:", Weather_Combined, "<br>Light:", Light_Combined, "<br>Road:", Road_Combined, "<br>Crashes:", Count))) +
+  output$plot <- renderPlotly({
+    
+    # Filter data based on user-selected year
+    filtered_data <- Seattle_Car_Crashes %>%
+      mutate(year = year(INCDATE), month = month(INCDATE)) %>% 
+      filter(year == input$year) %>%
+      group_by(month, WEATHER, ROADCOND, INCDATE, Road_Combined, Weather_Combined) %>%
+      summarise(Number_Accidents = n())
+    
+    p <- ggplot(filtered_data, aes(x = month, y = Number_Accidents, color = Road_Combined, shape = Weather_Combined, text = paste("Weather:", Weather_Combined, "<br>Road:", Road_Combined, "<br>Crashes:", Number_Accidents))) +
       geom_point(size = 3) +
-      labs(x = "Weather Condition", y = "Number of Car Crashes", color = "Light Condition", shape = "Road Condition") +
+      scale_x_discrete(limits = 1:12, labels = month.abb) +
+      labs(x = "Year-Month", y = "Number of Car Crashes", title = paste("Car Crashes by Weather and Road Condition in", input$year), color = "Road Condition", shape = "Weather Condition") +
       theme_minimal() +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "top", panel.background = element_rect(fill = "lightgrey"))
+    
+    ggplotly(p) %>%
+layout(legend = list(orientation = "h"))
     
     ggplotly(p, tooltip = "text")
   })
@@ -202,7 +222,7 @@ server <- function(input, output) {
       scale_shape_manual(values = c(16, 17, 15, 4, 2)) + # this is to have different shapes
       labs(x = "Severity Level", y = "# of Injuries", color = "Junction Type", shape = "Junction Type") +
       theme_minimal() +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      theme(axis.text.x = element_text(angle = 45, hjust = 1), panel.background = element_rect(fill = "lightgrey"))
     
     ggplotly(p)
   })
