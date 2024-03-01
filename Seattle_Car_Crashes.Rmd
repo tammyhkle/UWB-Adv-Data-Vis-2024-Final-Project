@@ -20,7 +20,6 @@ library(ggplot2)
 library(plotly)
 library(shiny)
 library(lubridate)
-library(leaflet)
 ```
 
 
@@ -29,7 +28,31 @@ About
 
 ### About Section
 
-This is about Seattle Car Crashes. 
+##### Introduction:
+Seattle's frequent car accidents, often attributed to its grey weather and rainy conditions, prompt the need for a comprehensive understanding of these incidents. This dashboard aims to shed light on car crashes in Seattle from January 1, 2018, to February 8, 2024, using a series of visualizations.
+
+##### Data Table Overview:
+The dashboard begins with a concise overview of the dataset in tabular form, providing users with a foundational understanding of the data used to generate subsequent visualizations.
+
+##### Temporal Analysis Map:
+A dynamic map illustrates the spatial distribution of car crashes in Seattle over time. Users can observe patterns, hotspots, and temporal trends to gain insights into accident occurrences across different neighborhoods and roadways.
+
+##### Attribution of Accident Causes:
+Delving deeper, the dashboard analyzes the primary causes of accidents—be it adverse weather conditions, road infrastructure, or inadequate lighting. The visualization has been divided into two parts to provide better understanding. These visualization elucidates the factors contributing most significantly to car crashes, aiding in pinpointing areas for potential safety enhancements.
+
+##### Injury Severity Analysis:
+Furthermore, the dashboard explores the types of accidents that result in the most severe injuries, identifying both the location and nature of incidents. This critical insight enables stakeholders to prioritize interventions aimed at reducing the incidence of severe injuries in specific contexts.
+
+##### Location-Based Analysis:
+A breakdown of accident-prone locations reveals where the majority of crashes occur, offering valuable insights into high-risk areas. Notably, the visualization highlights common scenarios such as left-turn accidents, providing actionable information for targeted intervention strategies.
+
+##### Limitations:
+Acknowledging the limitations, it's important to note the absence of data for weather, road, and light conditions in the year 2024. This constraint impacts the comprehensiveness of the analysis for the most recent period.
+
+##### Objective and Impact:
+In essence, the dashboard seeks to address the challenge of designing an accessible platform that synthesizes essential information about car collisions in Seattle. By facilitating a deeper understanding of accident attributes, the dashboard aims to empower auto engineers to implement safety adjustments and policymakers to enact targeted traffic safety measures. Ultimately, the overarching goal is to raise public awareness of the primary factors contributing to car crashes and foster a safer urban environment for all.
+
+##### GitHub Link:
 
 Table
 ===================================== 
