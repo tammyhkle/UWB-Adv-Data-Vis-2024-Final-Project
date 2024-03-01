@@ -170,6 +170,16 @@ ui <- fluidPage(
   # Giving the title to the graph
   titlePanel("Car Crashes by Light Condition over Time"),
   
+  # Adding Information about the visualization
+  fluidRow(
+    column(
+      width = 12,
+      h3("Visualization Description"),
+      p("The following visualization presents a detailed analysis of how light conditions have influenced car accidents over time in Seattle. It aims to elucidate whether insufficient lighting contributes to accident occurrences. Users have the flexibility to select the desired year for analysis, enabling a focused examination of trends and patterns."),
+      br(),  # Add a line break for spacing
+    )
+  ),
+  
   # Lets the user choose which year they want to view
   sidebarLayout(
     mainPanel(
