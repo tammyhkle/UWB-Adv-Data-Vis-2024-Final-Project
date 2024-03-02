@@ -20,6 +20,7 @@ library(ggplot2)
 library(plotly)
 library(shiny)
 library(lubridate)
+library(leaflet)
 ```
 
 
@@ -69,6 +70,40 @@ Geolocation
 ===================================== 
 
 ```{r GeoLocation}
+location <- Seattle_Car_Crashes %>%
+  mutate(year = year(INCDATE), month = month(INCDATE)) %>% 
+  select(LATITUDE,LONGITUDE,LOCATION,year)
+
+ui <- fluidPage(
+  titlePanel("Accident Map"),
+  sidebarLayout(
+    mainPanel(
+      selectInput("year", "Select Year:", choices = unique(location$year))
+    ),
+    mainPanel(
+      leafletOutput("map")
+    )
+  )
+)
+
+# Define server logic
+server <- function(input, output) {
+  
+  # Filter accidents based on selected year
+  data_2 <- reactive({
+    subset(location, year == input$year)
+  })
+  
+  # Render leaflet map
+  output$map <- renderLeaflet({
+    leaflet(data = data_2()) %>%
+      addTiles() %>%
+      addCircleMarkers(lng = ~LONGITUDE, lat = ~LATITUDE, radius = 2, popup = ~LOCATION)
+  })
+}
+
+# Run the application
+shinyApp(ui = ui, server = server)
 
 ```
 
