@@ -58,7 +58,7 @@ Table
 ===================================== 
 
 ```{r Reading and Displaying Data}
-Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
+Seattle_Car_Crashes <- read_excel("Seattle_Car_Crashes_2018-2024.xlsx")
 Seattle_Car_Crashes <- na.omit(Seattle_Car_Crashes)
 Seattle_Car_Crashes <- subset(Seattle_Car_Crashes, select = -c(INCDTTM))
 datatable(Seattle_Car_Crashes)
@@ -235,7 +235,7 @@ Scatter
 
 ```{r Scatter_Plot2}
 # Read the dataset from Excel file
-Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
+Seattle_Car_Crashes <- read_excel("Seattle_Car_Crashes_2018-2024.xlsx")
 
 # Filter out rows with unknown or irrelevant junction types
 valid_junction_types <- c("At Intersection (but not related to intersection)",
@@ -278,13 +278,7 @@ shinyApp(ui = ui, server = server)
 
 Bar
 ===================================== 
-<<<<<<< HEAD
 
-```{r Bar Graph}
-
-```
-
-=======
 ```{r}
 library(plotly)
 library(dplyr)
@@ -308,4 +302,4 @@ plot_ly(junction_severity_counts, x = ~JUNCTIONTYPE, y = ~count, type = 'bar', c
 
 
 ```
->>>>>>> 9f160004a3f204dd35a061ec9eda7bc32d7b090c
+
