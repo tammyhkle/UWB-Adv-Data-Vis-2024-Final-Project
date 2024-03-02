@@ -278,3 +278,8 @@ shinyApp(ui = ui, server = server)
 
 Bar
 ===================================== 
+
+```{r Bar Graph}
+
+```
+
