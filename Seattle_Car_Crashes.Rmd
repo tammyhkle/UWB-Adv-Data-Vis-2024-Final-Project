@@ -278,8 +278,34 @@ shinyApp(ui = ui, server = server)
 
 Bar
 ===================================== 
+<<<<<<< HEAD
 
 ```{r Bar Graph}
 
 ```
 
+=======
+```{r}
+library(plotly)
+library(dplyr)
+
+# Calculate counts of each junction type and severity level
+junction_severity_counts <- Seattle_Car_Crashes %>%
+  group_by(JUNCTIONTYPE, SEVERITYCODE) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+# Create a plotly bar chart with click events
+plot_ly(junction_severity_counts, x = ~JUNCTIONTYPE, y = ~count, type = 'bar', color = ~SEVERITYCODE, source = 'data') %>%
+  layout(
+    title = 'Relationship Between Junction Type and Severity',
+    xaxis = list(title = 'Junction Type', categoryorder = 'total descending'),
+    yaxis = list(title = 'Count'),
+    barmode = 'stack'
+  ) %>%
+  highlight(selectize = TRUE) %>%
+  event_register('plotly_click')
+
+
+```
+>>>>>>> 9f160004a3f204dd35a061ec9eda7bc32d7b090c
