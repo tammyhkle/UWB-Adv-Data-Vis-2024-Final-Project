@@ -6,6 +6,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
+    theme: sandstone
 runtime: shiny
 ---
 
@@ -77,7 +78,7 @@ location <- Seattle_Car_Crashes %>%
          WEATHER,ROADCOND,LIGHTCOND,SEVERITYCODE,year)
 
 ui <- fluidPage(theme = shinytheme("sandstone"),
-  titlePanel("Accident Map"),
+  div(style = "margin-top: 50px;", titlePanel("Accident Map")),
   
   fluidRow(
     column(
@@ -165,7 +166,7 @@ total_accident <- Seattle_Car_Crashes_Date %>%
 
 ui <- fluidPage(theme = shinytheme("sandstone"),
 
-  titlePanel("Seattle Car Crashes: Weather and Road Conditions by Year"),
+  div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Weather and Road Conditions by Year")),
   
   # Adding Information about the visualization
   fluidRow(
@@ -258,7 +259,7 @@ total_accident <- Seattle_Car_Crashes_Date %>%
 ui <- fluidPage(theme = shinytheme("sandstone"),
   
   # Giving the title to the graph
-  titlePanel("Car Crashes by Light Condition over Time"),
+  div(style = "margin-top: 50px;", titlePanel("Car Crashes by Light Condition over Time")),
   
   # Adding Information about the visualization
   fluidRow(
@@ -339,7 +340,7 @@ Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
 
 # UI
 ui <- fluidPage(theme = shinytheme("sandstone"),
-  titlePanel("Seattle Car Crashes: Number of Injuries and Severity Level at Junction Types"),
+  div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Number of Injuries and Severity Level at Junction Types")),
   
   # Visualization Description
   fluidRow(
@@ -429,7 +430,7 @@ Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
 
 # UI for the bubble chart
 ui <- fluidPage(
-  titlePanel("Seattle Car Crashes: Relationship Between Collision Type and Junction Type"),
+  div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Relationship Between Collision Type and Junction Type")),
   
   fluidRow(
     column(
