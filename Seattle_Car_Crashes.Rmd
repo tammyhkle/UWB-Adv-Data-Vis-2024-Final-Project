@@ -366,8 +366,8 @@ server <- function(input, output) {
     # Convert ggplot object to plotly object to add tooltips
     plot <- ggplotly(p, tooltip = "text")
     
-    # Modify the layout to move the legend to the bottom
-    plot <- plot %>% layout(legend = list(orientation = "h", x = 0.5, xanchor = "center", y = -0.3, yanchor = "top"))
+    # Modify the layout to move the legend and make it vertical
+    plot <- plot %>% layout(legend = list(orientation = "v", x = 1.05, xanchor = "left", y = 0.5, yanchor = "middle"))
     
     plot
   })
