@@ -6,6 +6,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
+    # theme: sandstone
 runtime: shiny
 ---
 
@@ -20,6 +21,8 @@ library(ggplot2)
 library(plotly)
 library(shiny)
 library(lubridate)
+library(leaflet)
+library(shinythemes) # Load the shinythemes library
 ```
 
 
@@ -58,22 +61,99 @@ Table
 ===================================== 
 
 ```{r Reading and Displaying Data}
-Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
+Seattle_Car_Crashes <- read_excel("Seattle_Car_Crashes_2018-2024.xlsx")
 Seattle_Car_Crashes <- na.omit(Seattle_Car_Crashes)
 Seattle_Car_Crashes <- subset(Seattle_Car_Crashes, select = -c(INCDTTM))
 datatable(Seattle_Car_Crashes)
 
 ```
 
-Geolocation
+Geolocation Map
 ===================================== 
 
 ```{r GeoLocation}
+location <- Seattle_Car_Crashes %>%
+  mutate(year = year(INCDATE), month = month(INCDATE)) %>% 
+  select(LATITUDE,LONGITUDE,LOCATION,INCDATE,COLLISIONTYPE,JUNCTIONTYPE,
+         WEATHER,ROADCOND,LIGHTCOND,SEVERITYCODE,year)
+
+ui <- fluidPage(theme = shinytheme("sandstone"),
+  titlePanel("Accident Map"),
+  
+  fluidRow(
+    column(
+      width = 12,
+      h3("Visualization Description"),
+      p("The visualization below displays a map of Seattle pinpointing the locations of accidents that have occurred throughout the year. It highlights areas where accidents are more frequent, serving as a guide to identify accident hot spots across the city. Additionally, the map categorizes accidents based on severity, providing insight into where the most severe incidents tend to happen in Seattle."),
+      br(),  # Add a line break for spacing
+    )
+  ),
+  
+  fluidRow(
+    column(
+      width = 3,
+      wellPanel(
+        selectInput("year", "Select Year:", choices = unique(location$year))
+      )
+    ),
+    column(
+      width = 9,
+      leafletOutput("map", width = "100%", height = "800px")
+    )
+  )
+)
+
+# Define server logic
+server <- function(input, output) {
+  
+  # Filter accidents based on selected year
+  data_2 <- reactive({
+    subset(location, year == input$year)
+  })
+  
+  pal <- colorFactor(
+    palette = c("lightyellow", "yellow", "orange", "red", "darkred"),
+    domain = c("0", "1", "2", "2b", "3")
+  )
+  
+  # Render leaflet map
+  output$map <- renderLeaflet({
+    leaflet(data = data_2()) %>%
+      addTiles() %>%
+      addCircleMarkers(
+        lng = ~LONGITUDE,
+        lat = ~LATITUDE,
+        radius = 5,
+        label = ~paste("<span style='font-size: 13px;'>", 
+                       "<strong>", format(as.Date(INCDATE), "%Y-%m-%d"), "</strong>", "</span>",
+                       "<strong><br>Location:</strong>", LOCATION,
+                       "<strong><br>Collision Type:</strong>", COLLISIONTYPE,
+                       "<strong><br>Junction Type:</strong>", JUNCTIONTYPE,
+                       "<strong><br>Weather:</strong>", WEATHER,
+                       "<strong><br>Road Condition:</strong>", ROADCOND,
+                       "<strong><br>Light Condition:</strong>", LIGHTCOND,
+                       "<strong><br>Severity Code:</strong>", SEVERITYCODE) %>%
+                        lapply(htmltools::HTML),
+        color = ~pal(SEVERITYCODE),
+        opacity = 0.7,
+        fillOpacity = 0.7
+      ) %>%
+      # Define color palette
+      addLegend(position = "bottomright", 
+                pal = pal,
+                values = ~SEVERITYCODE,
+                title = "Severity Code"
+      )
+  })
+}
+
+# Run the application
+shinyApp(ui = ui, server = server)
 
 ```
 
 
-Scatter
+Road and Weather Condition
 ===================================== 
 
 ```{r Scatter Plot}
@@ -84,8 +164,19 @@ total_accident <- Seattle_Car_Crashes_Date %>%
   group_by(year, month, WEATHER, ROADCOND) %>%
   summarise(Number_Accidents = n())
 
-ui <- fluidPage(
-  titlePanel("Seattle Car Crashes Weather and Road Conditions by Year"),
+ui <- fluidPage(theme = shinytheme("sandstone"),
+
+  titlePanel("Seattle Car Crashes: Weather and Road Conditions by Year"),
+  
+  # Adding Information about the visualization
+  fluidRow(
+    column(
+      width = 12,
+      h3("Visualization Description"),
+      p("The following scatterplots present a detailed analysis of how weather and road conditions have influenced car accidents over time in Seattle. It aims to determine whether certain combinations of weather and road conditions contribute to accident occurrences. Users have the flexibility to select the desired year for analysis, enabling a focused examination of trends and patterns."),
+      br(),  # Add a line break for spacing
+    )
+  ),
   
   fluidRow(
     column(
@@ -151,7 +242,7 @@ layout(legend = list(orientation = "h"))
 shinyApp(ui = ui, server = server)
 ```
 
-Line
+Light Condition
 ===================================== 
 
 ```{r Line Graph}
@@ -165,7 +256,7 @@ total_accident <- Seattle_Car_Crashes_Date %>%
   summarise(Number_Accidents = n())
 
 # Making the graph interactive
-ui <- fluidPage(
+ui <- fluidPage(theme = shinytheme("sandstone"),
   
   # Giving the title to the graph
   titlePanel("Car Crashes by Light Condition over Time"),
@@ -212,7 +303,7 @@ server <- function(input, output) {
   output$plot <- renderPlotly({
      lightcond_colors <- c("Daylight" = "blue", "Dark - Street Lights On" = "green", "Dusk" = "orange", "Dawn" = "red", "Dark - No Street Lights" = "purple", "Dark - Street Lights Off" = "brown", "Unknown" = "gray", "Other" = "black")
     # Creating the plot
-    p <- ggplot(data(), aes(x = month, y = Number_Accidents, group = LIGHTCOND, color = LIGHTCOND)) +
+    p <- ggplot(data(), aes(x = month, y = Number_Accidents, group = LIGHTCOND, color = LIGHTCOND, text = paste("Crashes:", Number_Accidents))) +
       geom_line() +
       scale_x_discrete(limits = 1:12, labels = month.abb) +
       labs(x = "Year-Month", y = "Number of Accidents", title = paste("Car Crashes by Light Condition in", input$year)) +
@@ -230,12 +321,12 @@ layout(legend = list(orientation = "h"))
 shinyApp(ui = ui, server = server)
 ```
 
-Scatter
+Severity of injuries vs Junction type
 ===================================== 
 
 ```{r Scatter_Plot2}
 # Read the dataset from Excel file
-Seattle_Car_Crashes <- read_excel("Seattle Car Crashes.xlsx")
+Seattle_Car_Crashes <- read_excel("Seattle_Car_Crashes_2018-2024.xlsx")
 
 # Filter out rows with unknown or irrelevant junction types
 valid_junction_types <- c("At Intersection (but not related to intersection)",
@@ -244,40 +335,87 @@ valid_junction_types <- c("At Intersection (but not related to intersection)",
                           "Mid-Block (but intersection related)",
                           "Mid-Block (not related to intersection)")
 Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
-  filter(JUNCTIONTYPE %in% valid_junction_types)
+  filter(JUNCTIONTYPE %in% valid_junction_types) %>%
+  mutate(year = year(INCDATE))  # Add a year column for filtering
 
 # UI
-ui <- fluidPage(
-  titlePanel("Seattle Car Crashes: # of Injuries and Severity Level at which Junction"),
+ui <- fluidPage(theme = shinytheme("sandstone"),
+  titlePanel("Seattle Car Crashes: Number of Injuries and Severity Level at Junction Types"),
+  
+  # Visualization Description
   fluidRow(
     column(
       width = 12,
-      plotlyOutput("crash_plot", width = "97%", height = "600px")
+      h3("Visualization Description"),
+      p("This visualization provides insights into the correlation between the number of injuries and the severity level of car crashes at different junction types in Seattle. It aims to highlight the impact of junction type on the severity and outcomes of accidents. Users can explore the data to understand which junction types are most associated with severe accidents."),
+      br()  # Add a line break for spacing
+    )
+  ),
+  
+  # Year selection above the graph
+  fluidRow(
+    column(
+      width = 12,
+      selectInput("year", "Select Year:", choices = unique(Seattle_Car_Crashes$year))
+    )
+  ),
+  
+  # Graph
+  fluidRow(
+    column(
+      width = 12,
+      plotlyOutput("crash_plot", width = "100%", height = "600px")
     )
   )
 )
 
-# server logic
+# Server logic
 server <- function(input, output) {
-  # Output the interactive plot
-  output$crash_plot <- renderPlotly({
-    p <- ggplot(Seattle_Car_Crashes, aes(x = SEVERITYCODE, y = INJURIES, color = JUNCTIONTYPE, shape = JUNCTIONTYPE)) +
-      geom_point(size = 6) + # Increase size for better visibility
-      scale_shape_manual(values = c(16, 17, 15, 4, 2)) + # this is to have different shapes
-      labs(x = "Severity Level", y = "# of Injuries", color = "Junction Type", shape = "Junction Type") +
-      theme_minimal() +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1), panel.background = element_rect(fill = "lightgrey"))
+  # Reactive expression to filter data based on selected year
+  filtered_data <- reactive({
+    data <- Seattle_Car_Crashes %>% filter(year == input$year)
     
-    ggplotly(p)
+    # Calculate total injuries per JUNCTIONTYPE
+    injuries_per_junction <- data %>%
+      group_by(JUNCTIONTYPE) %>%
+      summarise(Total_Injuries = sum(INJURIES)) %>%
+      arrange(desc(Total_Injuries)) # Arrange by descending order of total injuries
+
+    # Reorder the JUNCTIONTYPE factor based on the total injuries
+    data$JUNCTIONTYPE <- factor(data$JUNCTIONTYPE, levels = injuries_per_junction$JUNCTIONTYPE)
+    
+    data
+  })
+  
+  # Output the interactive plot with faceting and without the legend
+  output$crash_plot <- renderPlotly({
+    # Create a faceted plot without a legend
+    p <- ggplot(filtered_data(), aes(x = SEVERITYCODE, y = INJURIES, color = JUNCTIONTYPE, shape = JUNCTIONTYPE, text = paste("Severity Code:", SEVERITYCODE, "<br>Number of Injuries:", INJURIES, "<br>Junction Type:", JUNCTIONTYPE))) +
+      geom_jitter(size = 4, alpha = 0.5) + # Apply jittering and transparency
+      facet_wrap(~JUNCTIONTYPE, scales = "free_y") + # Faceting by junction type
+      scale_shape_manual(values = c(16, 17, 15, 4, 2)) + # Different shapes for junction types
+      labs(x = "Severity Level", y = "Number of Injuries") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+            panel.background = element_rect(fill = "lightgrey"), 
+            strip.background = element_rect(fill = "lightblue"), 
+            strip.text = element_text(size = 10),
+            legend.position = "none") # Remove the legend
+    
+    # Convert ggplot object to plotly object to add tooltips
+    ggplotly(p, tooltip = "text")
   })
 }
 
-# run the application
+# Run the application
 shinyApp(ui = ui, server = server)
 ```
 
-Bubble chart
-===================================== 
+
+Collision type VS Junction type
+=======
+
+
 ```{r}
 library(plotly)
 library(dplyr)
@@ -298,7 +436,7 @@ ui <- fluidPage(
   fluidRow(
     column(
       width = 12,
-      h3("Graph Description"),
+      h3("Visualization Description"),
       p("This interactive bubble chart illustrates the relationship between junction types and collision types for car crashes in Seattle. Users can select a specific year to analyze the distribution of collision types across different junction types."),
       br()  # Add a line break for spacing
     )
@@ -348,3 +486,4 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 
 ```
+=======
