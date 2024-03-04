@@ -76,7 +76,7 @@ location <- Seattle_Car_Crashes %>%
   select(LATITUDE,LONGITUDE,LOCATION,INCDATE,COLLISIONTYPE,JUNCTIONTYPE,
          WEATHER,ROADCOND,LIGHTCOND,SEVERITYCODE,year)
 
-ui <- fluidPage(
+ui <- fluidPage(theme = shinytheme("sandstone"),
   titlePanel("Accident Map"),
   fluidRow(
     column(
@@ -153,8 +153,8 @@ total_accident <- Seattle_Car_Crashes_Date %>%
   group_by(year, month, WEATHER, ROADCOND) %>%
   summarise(Number_Accidents = n())
 
-ui <- fluidPage(
-  theme = shinytheme("sandstone"),
+ui <- fluidPage(theme = shinytheme("sandstone"),
+
   titlePanel("Seattle Car Crashes: Weather and Road Conditions by Year"),
   
   # Adding Information about the visualization
@@ -245,8 +245,7 @@ total_accident <- Seattle_Car_Crashes_Date %>%
   summarise(Number_Accidents = n())
 
 # Making the graph interactive
-ui <- fluidPage(
-  theme = shinytheme("sandstone"),
+ui <- fluidPage(theme = shinytheme("sandstone"),
   
   # Giving the title to the graph
   titlePanel("Car Crashes by Light Condition over Time"),
@@ -329,8 +328,7 @@ Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
   mutate(year = year(INCDATE))  # Add a year column for filtering
 
 # UI
-ui <- fluidPage(
-  theme = shinytheme("sandstone"),
+ui <- fluidPage(theme = shinytheme("sandstone"),
   titlePanel("Seattle Car Crashes: Number of Injuries and Severity Level at Junction Types"),
   
   # Visualization Description
