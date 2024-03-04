@@ -250,6 +250,7 @@ server <- function(input, output) {
 layout(legend = list(orientation = "h"))
     
     ggplotly(p, tooltip = "text")
+   
   })
 }
 
@@ -305,7 +306,7 @@ ui <- fluidPage(
       fluidRow(
         column(
           width = 12,
-          plotlyOutput("plot", width = "auto", height = "auto")
+          plotlyOutput("plot", width = "150%", height = "600px")
         )
       )
     )
@@ -328,10 +329,17 @@ server <- function(input, output) {
        scale_color_manual(values = lightcond_colors) + 
       theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels by 45 degrees
     
-     ggplotly(p) %>%
-layout(legend = list(orientation = "h"))
-    
-    ggplotly(p, tooltip = "text")
+    ggplotly(p, tooltip = "text") %>%
+      layout(
+        legend = list(
+          orientation = "h",
+          x = 0.5, y = -0.13,  # Adjust position of legend
+          traceorder = "normal",  # Keep the order of the legend items as in the plot
+          title = list(text = "Light Condition"),
+          itemwidth = 120  # Adjust width of legend items for readability
+        ),
+        margin = list(l = 50, r = 50, t = 50, b = 50) # Adjust the margins
+      )  
 
   })
 }
