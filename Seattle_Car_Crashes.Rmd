@@ -352,7 +352,7 @@ server <- function(input, output) {
   # Output the interactive plot
   output$crash_plot <- renderPlotly({
     p <- ggplot(filtered_data(), aes(x = SEVERITYCODE, y = INJURIES, color = JUNCTIONTYPE, shape = JUNCTIONTYPE)) +
-      geom_point(size = 6) + # Increase size for better visibility
+      geom_jitter(size = 4) + # Increase size for better visibility
       scale_shape_manual(values = c(16, 17, 15, 4, 2)) + # Different shapes for junction types
       labs(x = "Severity Level", y = "Number of Injuries", color = "Junction Type", shape = "Junction Type") +
       theme_minimal() +
