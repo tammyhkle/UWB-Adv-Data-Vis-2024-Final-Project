@@ -6,6 +6,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
+    theme: sandstone
 runtime: shiny
 ---
 
@@ -21,7 +22,7 @@ library(plotly)
 library(shiny)
 library(lubridate)
 library(leaflet)
-library(shinythemes)
+library(shinythemes) # Load the shinythemes library
 ```
 
 
