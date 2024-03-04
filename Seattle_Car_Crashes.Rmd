@@ -77,14 +77,17 @@ location <- Seattle_Car_Crashes %>%
          WEATHER,ROADCOND,LIGHTCOND,SEVERITYCODE,year)
 
 ui <- fluidPage(
-  theme = shinytheme("sandstone"),
   titlePanel("Accident Map"),
-  sidebarLayout(
-    mainPanel(
-      selectInput("year", "Select Year:", choices = unique(location$year))
+  fluidRow(
+    column(
+      width = 3,
+      wellPanel(
+        selectInput("year", "Select Year:", choices = unique(location$year))
+      )
     ),
-    mainPanel(
-      leafletOutput("map", width = "800px", height = "600px")
+    column(
+      width = 9,
+      leafletOutput("map", width = "100%", height = "800px")
     )
   )
 )
