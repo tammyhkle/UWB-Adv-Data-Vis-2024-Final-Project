@@ -72,7 +72,8 @@ Geolocation
 ```{r GeoLocation}
 location <- Seattle_Car_Crashes %>%
   mutate(year = year(INCDATE), month = month(INCDATE)) %>% 
-  select(LATITUDE,LONGITUDE,LOCATION,year)
+  select(LATITUDE,LONGITUDE,LOCATION,INCDATE,COLLISIONTYPE,JUNCTIONTYPE,
+         WEATHER,ROADCOND,LIGHTCOND,SEVERITYCODE,year)
 
 ui <- fluidPage(
   titlePanel("Accident Map"),
@@ -81,7 +82,7 @@ ui <- fluidPage(
       selectInput("year", "Select Year:", choices = unique(location$year))
     ),
     mainPanel(
-      leafletOutput("map")
+      leafletOutput("map", width = "800px", height = "600px")
     )
   )
 )
@@ -94,11 +95,39 @@ server <- function(input, output) {
     subset(location, year == input$year)
   })
   
+  pal <- colorFactor(
+    palette = c("lightyellow", "yellow", "orange", "red", "darkred"),
+    domain = c("0", "1", "2", "2b", "3")
+  )
+  
   # Render leaflet map
   output$map <- renderLeaflet({
     leaflet(data = data_2()) %>%
       addTiles() %>%
-      addCircleMarkers(lng = ~LONGITUDE, lat = ~LATITUDE, radius = 2, popup = ~LOCATION)
+      addCircleMarkers(
+        lng = ~LONGITUDE,
+        lat = ~LATITUDE,
+        radius = 5,
+        label = ~paste("<span style='font-size: 13px;'>", 
+                       "<strong>", format(as.Date(INCDATE), "%Y-%m-%d"), "</strong>", "</span>",
+                       "<strong><br>Location:</strong>", LOCATION,
+                       "<strong><br>Collision Type:</strong>", COLLISIONTYPE,
+                       "<strong><br>Junction Type:</strong>", JUNCTIONTYPE,
+                       "<strong><br>Weather:</strong>", WEATHER,
+                       "<strong><br>Road Condition:</strong>", ROADCOND,
+                       "<strong><br>Light Condition:</strong>", LIGHTCOND,
+                       "<strong><br>Severity Code:</strong>", SEVERITYCODE) %>%
+                        lapply(htmltools::HTML),
+        color = ~pal(SEVERITYCODE),
+        opacity = 0.7,
+        fillOpacity = 0.7
+      ) %>%
+      # Define color palette
+      addLegend(position = "bottomright", 
+                pal = pal,
+                values = ~SEVERITYCODE,
+                title = "Severity Code"
+      )
   })
 }
 
