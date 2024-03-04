@@ -436,7 +436,7 @@ ui <- fluidPage(
   fluidRow(
     column(
       width = 12,
-      h3("Visualization Description"),
+      h3("Graph Description"),
       p("This interactive bubble chart illustrates the relationship between junction types and collision types for car crashes in Seattle. Users can select a specific year to analyze the distribution of collision types across different junction types."),
       br()  # Add a line break for spacing
     )
@@ -470,13 +470,12 @@ server <- function(input, output) {
   
   # Output the interactive bubble chart
   output$bubble_chart <- renderPlotly({
-    plot_ly(filtered_data(), x = ~COLLISIONTYPE, y = ~JUNCTIONTYPE, size = ~count, color = ~count, type = "scatter", mode = "markers", marker = list(sizemode = "diameter")) %>%
+    plot_ly(filtered_data(), x = ~COLLISIONTYPE, y = ~JUNCTIONTYPE, size = ~count, color = ~count, type = "scatter", mode = "markers", marker = list(sizemode = "diameter"), hoverinfo = "text",
+            text = ~paste("Collision Type: ", COLLISIONTYPE, "<br>Junction Type: ", JUNCTIONTYPE, "<br>Count: ", count)) %>%
       layout(
         title = paste("Relationship Between Junction Type and Collision Type in", input$year),
         xaxis = list(title = "Collision Type"),
         yaxis = list(title = "Junction Type"),
-        hoverinfo = "text",
-        hovertext = ~paste("Collision Type: ", COLLISIONTYPE, "<br>Junction Type: ", JUNCTIONTYPE, "<br>Count: ", count),
         showlegend = FALSE
       )
   })
