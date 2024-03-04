@@ -413,8 +413,8 @@ shinyApp(ui = ui, server = server)
 
 
 Collision type VS Junction type
-=======
 
+=======
 
 ```{r}
 library(plotly)
@@ -431,6 +431,7 @@ Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
 
 # UI for the bubble chart
 ui <- fluidPage(
+  
   div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Relationship Between Collision Type and Junction Type")),
   
   fluidRow(
@@ -470,13 +471,12 @@ server <- function(input, output) {
   
   # Output the interactive bubble chart
   output$bubble_chart <- renderPlotly({
-    plot_ly(filtered_data(), x = ~COLLISIONTYPE, y = ~JUNCTIONTYPE, size = ~count, color = ~count, type = "scatter", mode = "markers", marker = list(sizemode = "diameter")) %>%
+    plot_ly(filtered_data(), x = ~COLLISIONTYPE, y = ~JUNCTIONTYPE, size = ~count, color = ~count, type = "scatter", mode = "markers", marker = list(sizemode = "diameter"), hoverinfo = "text",
+            text = ~paste("Collision Type: ", COLLISIONTYPE, "<br>Junction Type: ", JUNCTIONTYPE, "<br>Count: ", count)) %>%
       layout(
         title = paste("Relationship Between Junction Type and Collision Type in", input$year),
         xaxis = list(title = "Collision Type"),
         yaxis = list(title = "Junction Type"),
-        hoverinfo = "text",
-        hovertext = ~paste("Collision Type: ", COLLISIONTYPE, "<br>Junction Type: ", JUNCTIONTYPE, "<br>Count: ", count),
         showlegend = FALSE
       )
   })
@@ -487,3 +487,4 @@ shinyApp(ui = ui, server = server)
 
 ```
 =======
+
