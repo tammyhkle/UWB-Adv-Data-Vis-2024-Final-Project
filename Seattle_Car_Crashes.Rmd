@@ -25,7 +25,6 @@ library(leaflet)
 library(shinythemes) # Load the shinythemes library
 ```
 
-
 About
 ===================================== 
 
@@ -78,6 +77,9 @@ location <- Seattle_Car_Crashes %>%
          WEATHER,ROADCOND,LIGHTCOND,SEVERITYCODE,year)
 
 ui <- fluidPage(
+  
+  shinythemes::themeSelector(),
+  
   div(style = "margin-top: 50px;", titlePanel("Accident Map")),
   
   fluidRow(
@@ -166,6 +168,8 @@ total_accident <- Seattle_Car_Crashes_Date %>%
 
 ui <- fluidPage(
 
+  shinythemes::themeSelector(),
+
   div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Weather and Road Conditions by Year")),
   
   # Adding Information about the visualization
@@ -188,7 +192,7 @@ ui <- fluidPage(
   fluidRow(
     column(
           width = 12,
-          plotlyOutput("plot", width = "90%", height = "600px")
+          plotlyOutput("plot", width = "auto", height = "auto")
     )
   )
 )
@@ -228,9 +232,15 @@ server <- function(input, output) {
     p <- ggplot(filtered_data, aes(x = month, y = Number_Accidents, color = Road_Combined, shape = Weather_Combined, text = paste("Weather:", Weather_Combined, "<br>Road:", Road_Combined, "<br>Crashes:", Number_Accidents))) +
       geom_point(size = 3) +
       scale_x_discrete(limits = 1:12, labels = month.abb) +
-      labs(x = "Year-Month", y = "Number of Car Crashes", title = paste("Car Crashes by Weather and Road Condition in", input$year), color = "Road Condition", shape = "Weather Condition") +
-      theme_minimal() +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "top", panel.background = element_rect(fill = "lightgrey"))
+      labs(x = "Year-Month", y = "Number of Car Crashes", title = paste("Car Crashes by Weather and Road Condition in", input$year), color = "Road Condition", shape = "Weather Condition") + 
+      theme(
+        axis.text.x = element_text(angle = 45, hjust = 1), 
+        panel.background = element_rect(fill = "lightgrey"),
+        legend.position = c(.95, .95),
+        legend.justification = c("right", "top"),
+        legend.box.just = "right",
+        legend.margin = margin(6, 6, 6, 6)
+      )
     
     ggplotly(p) %>%
 layout(legend = list(orientation = "h"))
@@ -257,6 +267,8 @@ total_accident <- Seattle_Car_Crashes_Date %>%
 
 # Making the graph interactive
 ui <- fluidPage(
+
+  shinythemes::themeSelector(),
   
   # Giving the title to the graph
   div(style = "margin-top: 50px;", titlePanel("Car Crashes by Light Condition over Time")),
@@ -287,7 +299,7 @@ ui <- fluidPage(
       fluidRow(
         column(
           width = 12,
-          plotlyOutput("plot", width = "150%", height = "600px")
+          plotlyOutput("plot", width = "auto", height = "auto")
         )
       )
     )
@@ -325,10 +337,10 @@ Severity of injuries vs Junction type
 ===================================== 
 
 ```{r Scatter_Plot2}
-# Read the dataset from Excel file
+# reading in the dataset from Excel file
 Seattle_Car_Crashes <- read_excel("Seattle_Car_Crashes_2018-2024.xlsx")
 
-# Filter out rows with unknown or irrelevant junction types
+# filter out rows with unknown or irrelevant junction types
 valid_junction_types <- c("At Intersection (but not related to intersection)",
                           "At Intersection (intersection related)",
                           "Driveway Junction",
@@ -340,9 +352,12 @@ Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
 
 # UI
 ui <- fluidPage(
+
+  shinythemes::themeSelector(),
+
   div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Number of Injuries and Severity Level at Junction Types")),
   
-  # Visualization Description
+  # visualization description
   fluidRow(
     column(
       width = 12,
@@ -352,7 +367,7 @@ ui <- fluidPage(
     )
   ),
   
-  # Year selection above the graph
+  # year selection above the graph
   fluidRow(
     column(
       width = 12,
@@ -360,7 +375,7 @@ ui <- fluidPage(
     )
   ),
   
-  # Graph
+  # graph
   fluidRow(
     column(
       width = 12,
@@ -369,45 +384,54 @@ ui <- fluidPage(
   )
 )
 
-# Server logic
+# server logic
 server <- function(input, output) {
-  # Reactive expression to filter data based on selected year
+  # reactive - filter data based on selected year
   filtered_data <- reactive({
     data <- Seattle_Car_Crashes %>% filter(year == input$year)
     
-    # Calculate total injuries per JUNCTIONTYPE
+    # total injuries per JUNCTIONTYPE
     injuries_per_junction <- data %>%
       group_by(JUNCTIONTYPE) %>%
       summarise(Total_Injuries = sum(INJURIES)) %>%
       arrange(desc(Total_Injuries)) # Arrange by descending order of total injuries
 
-    # Reorder the JUNCTIONTYPE factor based on the total injuries
+    # reorder the JUNCTIONTYPE factor based on the total injuries
     data$JUNCTIONTYPE <- factor(data$JUNCTIONTYPE, levels = injuries_per_junction$JUNCTIONTYPE)
     
     data
   })
   
-  # Output the interactive plot with faceting and without the legend
-  output$crash_plot <- renderPlotly({
-    # Create a faceted plot without a legend
-    p <- ggplot(filtered_data(), aes(x = SEVERITYCODE, y = INJURIES, color = JUNCTIONTYPE, shape = JUNCTIONTYPE, text = paste("Severity Code:", SEVERITYCODE, "<br>Number of Injuries:", INJURIES, "<br>Junction Type:", JUNCTIONTYPE))) +
-      geom_jitter(size = 4, alpha = 0.5) + # Apply jittering and transparency
-      facet_wrap(~JUNCTIONTYPE, scales = "free_y") + # Faceting by junction type
-      scale_shape_manual(values = c(16, 17, 15, 4, 2)) + # Different shapes for junction types
-      labs(x = "Severity Level", y = "Number of Injuries") +
-      theme_minimal() +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1), 
-            panel.background = element_rect(fill = "lightgrey"), 
-            strip.background = element_rect(fill = "lightblue"), 
-            strip.text = element_text(size = 10),
-            legend.position = "none") # Remove the legend
-    
-    # Convert ggplot object to plotly object to add tooltips
-    ggplotly(p, tooltip = "text")
-  })
+# interactive plot with adjustments for categorical color scale
+output$crash_plot <- renderPlotly({
+  # manual color scale for severity codes
+severity_colors <- c(
+  "0" = "#ffd92f",   # dark yellow for the least severe 0
+  "1" = "#fdae61",   # light orange for severity 1
+  "2" = "#f46d43",   # medium orange for severity 2
+  "2b" = "#d73027",  # red-orange for severity 2b
+  "3" = "#c40233",   # dark red for severity 3
+  "4" = "#8b0000"    # Darkest red for the most severity 4
+)  
+  # create a faceted plot without a legend, i'm using a manual color scale
+  p <- ggplot(filtered_data(), aes(x = as.factor(SEVERITYCODE), y = INJURIES, color = as.factor(SEVERITYCODE), shape = JUNCTIONTYPE, text = paste("Severity Code:", SEVERITYCODE, "<br>Number of Injuries:", INJURIES, "<br>Junction Type:", JUNCTIONTYPE))) +
+    geom_jitter(size = 4, alpha = 0.5) + # jittering and transparency
+    facet_wrap(~JUNCTIONTYPE, scales = "free_y") + # faceting by junction type
+    scale_color_manual(values = severity_colors) + # using manual color scale for severity codes
+    scale_shape_manual(values = c(16, 17, 18, 4, 8)) + # shapes for clarity by off of different junctions
+    labs(x = "Severity Level", y = "Number of Injuries", title = paste("Seattle Car Crashes in", input$year, ": Injury Severity at Different Junction Types")) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          panel.background = element_rect(fill = "lightgrey"),
+          strip.background = element_rect(fill = "white"),
+          strip.text = element_text(size = 10),
+          legend.position = "none") # i am removing the legend
+  
+  ggplotly(p, tooltip = "text")
+})
 }
 
-# Run the application
+# run the application
 shinyApp(ui = ui, server = server)
 ```
 
@@ -430,6 +454,7 @@ Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
 
 # UI for the bubble chart
 ui <- fluidPage(
+  shinythemes::themeSelector(),
   div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Relationship Between Collision Type and Junction Type")),
   
   fluidRow(
