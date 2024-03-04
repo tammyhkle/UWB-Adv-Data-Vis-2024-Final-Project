@@ -333,7 +333,7 @@ server <- function(input, output) {
       layout(
         legend = list(
           orientation = "h",
-          x = 0.5, y = -0.13,  # Adjust position of legend
+          x = 0.5, y = -0.15,  # Adjust position of legend
           traceorder = "normal",  # Keep the order of the legend items as in the plot
           title = list(text = "Light Condition"),
           itemwidth = 120  # Adjust width of legend items for readability
