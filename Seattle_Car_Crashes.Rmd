@@ -6,7 +6,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
-    # theme: sandstone
+    theme: sandstone
 runtime: shiny
 ---
 
@@ -78,7 +78,7 @@ location <- Seattle_Car_Crashes %>%
          WEATHER,ROADCOND,LIGHTCOND,SEVERITYCODE,year)
 
 ui <- fluidPage(theme = shinytheme("sandstone"),
-  titlePanel("Accident Map"),
+  div(style = "margin-top: 50px;", titlePanel("Accident Map")),
   
   fluidRow(
     column(
@@ -166,7 +166,7 @@ total_accident <- Seattle_Car_Crashes_Date %>%
 
 ui <- fluidPage(theme = shinytheme("sandstone"),
 
-  titlePanel("Seattle Car Crashes: Weather and Road Conditions by Year"),
+  div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Weather and Road Conditions by Year")),
   
   # Adding Information about the visualization
   fluidRow(
@@ -259,7 +259,7 @@ total_accident <- Seattle_Car_Crashes_Date %>%
 ui <- fluidPage(theme = shinytheme("sandstone"),
   
   # Giving the title to the graph
-  titlePanel("Car Crashes by Light Condition over Time"),
+  div(style = "margin-top: 50px;", titlePanel("Car Crashes by Light Condition over Time")),
   
   # Adding Information about the visualization
   fluidRow(
@@ -340,7 +340,7 @@ Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
 
 # UI
 ui <- fluidPage(theme = shinytheme("sandstone"),
-  titlePanel("Seattle Car Crashes: Number of Injuries and Severity Level at Junction Types"),
+  div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Number of Injuries and Severity Level at Junction Types")),
   
   # Visualization Description
   fluidRow(
@@ -411,30 +411,79 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 
+
 Collision type VS Junction type
-===================================== 
+=======
+
 
 ```{r}
 library(plotly)
 library(dplyr)
 
-# Calculate counts of each junction type and severity level
-junction_severity_counts <- Seattle_Car_Crashes %>%
-  group_by(JUNCTIONTYPE, SEVERITYCODE) %>%
-  summarise(count = n()) %>%
-  ungroup()
+# Filter out rows with unknown or irrelevant junction types
+valid_junction_types <- c("At Intersection (but not related to intersection)",
+                          "At Intersection (intersection related)",
+                          "Driveway Junction",
+                          "Mid-Block (but intersection related)",
+                          "Mid-Block (not related to intersection)")
+Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
+  filter(JUNCTIONTYPE %in% valid_junction_types)
 
-# Create a plotly bar chart with click events
-plot_ly(junction_severity_counts, x = ~JUNCTIONTYPE, y = ~count, type = 'bar', color = ~SEVERITYCODE, source = 'data') %>%
-  layout(
-    title = 'Relationship Between Junction Type and Severity',
-    xaxis = list(title = 'Junction Type', categoryorder = 'total descending'),
-    yaxis = list(title = 'Count'),
-    barmode = 'stack'
-  ) %>%
-  highlight(selectize = TRUE) %>%
-  event_register('plotly_click')
+# UI for the bubble chart
+ui <- fluidPage(
+  div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Relationship Between Collision Type and Junction Type")),
+  
+  fluidRow(
+    column(
+      width = 12,
+      h3("Visualization Description"),
+      p("This interactive bubble chart illustrates the relationship between junction types and collision types for car crashes in Seattle. Users can select a specific year to analyze the distribution of collision types across different junction types."),
+      br()  # Add a line break for spacing
+    )
+  ),
+  
+  fluidRow(
+    column(
+      width = 8,
+      selectInput("year","Select Year",choices = unique(year(Seattle_Car_Crashes$INCDATE)))
+    )
+  ),
+  
+  fluidRow(
+    column(
+      width = 12,
+      plotlyOutput("bubble_chart", width = "100%", height = "600px")
+    )
+  )
+)
 
+# Server logic for the bubble chart
+server <- function(input, output) {
+  # Reactive expression for filtered data based on selected year
+  filtered_data <- reactive({
+    Seattle_Car_Crashes %>%
+      filter(year(INCDATE) == input$year) %>%
+      group_by(COLLISIONTYPE, JUNCTIONTYPE) %>%
+      summarise(count = n()) %>%
+      ungroup()
+  })
+  
+  # Output the interactive bubble chart
+  output$bubble_chart <- renderPlotly({
+    plot_ly(filtered_data(), x = ~COLLISIONTYPE, y = ~JUNCTIONTYPE, size = ~count, color = ~count, type = "scatter", mode = "markers", marker = list(sizemode = "diameter")) %>%
+      layout(
+        title = paste("Relationship Between Junction Type and Collision Type in", input$year),
+        xaxis = list(title = "Collision Type"),
+        yaxis = list(title = "Junction Type"),
+        hoverinfo = "text",
+        hovertext = ~paste("Collision Type: ", COLLISIONTYPE, "<br>Junction Type: ", JUNCTIONTYPE, "<br>Count: ", count),
+        showlegend = FALSE
+      )
+  })
+}
+
+# Run the shiny app
+shinyApp(ui = ui, server = server)
 
 ```
-
+=======
