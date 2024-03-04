@@ -276,34 +276,11 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 
-Bar
+Bubble chart
 ===================================== 
 ```{r}
 library(plotly)
 library(dplyr)
-
-# Calculate counts of each junction type and severity level
-junction_severity_counts <- Seattle_Car_Crashes %>%
-  group_by(JUNCTIONTYPE, SEVERITYCODE) %>%
-  summarise(count = n()) %>%
-  ungroup()
-
-# Create a plotly bar chart with click events
-plot_ly(junction_severity_counts, x = ~JUNCTIONTYPE, y = ~count, type = 'bar', color = ~SEVERITYCODE, source = 'data') %>%
-  layout(
-    title = 'Relationship Between Junction Type and Severity',
-    xaxis = list(title = 'Junction Type', categoryorder = 'total descending'),
-    yaxis = list(title = 'Count'),
-    barmode = 'stack'
-  ) %>%
-  highlight(selectize = TRUE) %>%
-  event_register('plotly_click')
-
-
-```
-
-```{r}
-
 
 # Filter out rows with unknown or irrelevant junction types
 valid_junction_types <- c("At Intersection (but not related to intersection)",
@@ -314,45 +291,60 @@ valid_junction_types <- c("At Intersection (but not related to intersection)",
 Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
   filter(JUNCTIONTYPE %in% valid_junction_types)
 
-# UI
+# UI for the bubble chart
 ui <- fluidPage(
-  titlePanel("Seattle Car Crashes: Relationship Between Function Type, Collision Type, and Severity"),
+  titlePanel("Seattle Car Crashes: Relationship Between Collision Type and Junction Type"),
+  
   fluidRow(
     column(
       width = 12,
-      plotlyOutput("bar_plot", width = "97%", height = "600px")
+      h3("Graph Description"),
+      p("This interactive bubble chart illustrates the relationship between junction types and collision types for car crashes in Seattle. Users can select a specific year to analyze the distribution of collision types across different junction types."),
+      br()  # Add a line break for spacing
+    )
+  ),
+  
+  fluidRow(
+    column(
+      width = 8,
+      selectInput("year","Select Year",choices = unique(year(Seattle_Car_Crashes$INCDATE)))
+    )
+  ),
+  
+  fluidRow(
+    column(
+      width = 12,
+      plotlyOutput("bubble_chart", width = "100%", height = "600px")
     )
   )
 )
 
-# server logic
+# Server logic for the bubble chart
 server <- function(input, output) {
-  # Output the interactive plot
-  output$bar_plot <- renderPlotly({
-    # Filter data based on selected year
-    filtered_data <- Seattle_Car_Crashes %>%
-      mutate(year = year(INCDATE)) %>%
-      filter(year == input$year)
-    
-    # Calculate counts of each function type, collision type, and severity level
-    function_collision_severity_counts <- filtered_data %>%
-      group_by(FUNCTIONTYPE, COLLISIONTYPE, SEVERITYCODE) %>%
+  # Reactive expression for filtered data based on selected year
+  filtered_data <- reactive({
+    Seattle_Car_Crashes %>%
+      filter(year(INCDATE) == input$year) %>%
+      group_by(COLLISIONTYPE, JUNCTIONTYPE) %>%
       summarise(count = n()) %>%
       ungroup()
-    
-    # Create a plotly bar chart
-    plot_ly(function_collision_severity_counts, x = ~FUNCTIONTYPE, y = ~count, type = 'bar', color = ~SEVERITYCODE, 
-            text = ~paste("Function Type: ", FUNCTIONTYPE, "<br>Collision Type: ", COLLISIONTYPE, "<br>Count: ", count),
-            hoverinfo = "text") %>%
+  })
+  
+  # Output the interactive bubble chart
+  output$bubble_chart <- renderPlotly({
+    plot_ly(filtered_data(), x = ~COLLISIONTYPE, y = ~JUNCTIONTYPE, size = ~count, color = ~count, type = "scatter", mode = "markers", marker = list(sizemode = "diameter")) %>%
       layout(
-        title = paste("Relationship Between Function Type, Collision Type, and Severity in", input$year),
-        xaxis = list(title = 'Function Type', categoryorder = 'total descending'),
-        yaxis = list(title = 'Count'),
-        barmode = 'stack'
+        title = paste("Relationship Between Junction Type and Collision Type in", input$year),
+        xaxis = list(title = "Collision Type"),
+        yaxis = list(title = "Junction Type"),
+        hoverinfo = "text",
+        hovertext = ~paste("Collision Type: ", COLLISIONTYPE, "<br>Junction Type: ", JUNCTIONTYPE, "<br>Count: ", count),
+        showlegend = FALSE
       )
   })
 }
 
-# run the application
+# Run the shiny app
 shinyApp(ui = ui, server = server)
+
 ```
