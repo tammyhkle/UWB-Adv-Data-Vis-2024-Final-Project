@@ -349,16 +349,17 @@ server <- function(input, output) {
     Seattle_Car_Crashes %>% filter(year == input$year)
   })
   
-  # Output the interactive plot
+  # Output the interactive plot with jittering and transparency
   output$crash_plot <- renderPlotly({
     p <- ggplot(filtered_data(), aes(x = SEVERITYCODE, y = INJURIES, color = JUNCTIONTYPE, shape = JUNCTIONTYPE)) +
-      geom_jitter(size = 4) + # Increase size for better visibility
+      geom_jitter(size = 4, alpha = 0.5, width = 0.3, height = 0.3) + # Apply jittering and transparency
       scale_shape_manual(values = c(16, 17, 15, 4, 2)) + # Different shapes for junction types
       labs(x = "Severity Level", y = "Number of Injuries", color = "Junction Type", shape = "Junction Type") +
       theme_minimal() +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1), panel.background = element_rect(fill = "lightgrey"))
+      theme(axis.text.x = element_text(angle = 45, hjust = 1), panel.background = element_rect(fill = "lightgrey")) +
+      guides(color = guide_legend(override.aes = list(alpha = 1))) # Ensure legend is not affected by alpha transparency
     
-    ggplotly(p)
+    ggplotly(p, tooltip = "text")
   })
 }
 
