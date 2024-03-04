@@ -415,7 +415,6 @@ shinyApp(ui = ui, server = server)
 Collision type VS Junction type
 =======
 
-
 ```{r}
 library(plotly)
 library(dplyr)
