@@ -79,6 +79,16 @@ location <- Seattle_Car_Crashes %>%
 
 ui <- fluidPage(theme = shinytheme("sandstone"),
   titlePanel("Accident Map"),
+  
+  fluidRow(
+    column(
+      width = 12,
+      h3("Visualization Description"),
+      p("The visualization below displays a map of Seattle pinpointing the locations of accidents that have occurred throughout the year. It highlights areas where accidents are more frequent, serving as a guide to identify accident hot spots across the city. Additionally, the map categorizes accidents based on severity, providing insight into where the most severe incidents tend to happen in Seattle."),
+      br(),  # Add a line break for spacing
+    )
+  ),
+  
   fluidRow(
     column(
       width = 3,
