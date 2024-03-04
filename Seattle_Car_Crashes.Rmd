@@ -358,10 +358,18 @@ server <- function(input, output) {
       scale_shape_manual(values = c(16, 17, 15, 4, 2)) + # Different shapes for junction types
       labs(x = "Severity Level", y = "Number of Injuries") +
       theme_minimal() +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1), panel.background = element_rect(fill = "lightgrey"), strip.background = element_rect(fill = "lightblue"), strip.text = element_text(size = 10)) # Style facets
+      theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+            panel.background = element_rect(fill = "lightgrey"), 
+            strip.background = element_rect(fill = "lightblue"), 
+            strip.text = element_text(size = 10))
     
     # Convert ggplot object to plotly object to add tooltips
-    ggplotly(p, tooltip = "text")
+    plot <- ggplotly(p, tooltip = "text")
+    
+    # Modify the layout to move the legend to the bottom
+    plot <- plot %>% layout(legend = list(orientation = "h", x = 0.5, xanchor = "center", y = -0.3, yanchor = "top"))
+    
+    plot
   })
 }
 
