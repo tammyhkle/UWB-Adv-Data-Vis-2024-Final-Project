@@ -356,30 +356,37 @@ ui <- fluidPage(
 server <- function(input, output) {
   # Reactive expression to filter data based on selected year
   filtered_data <- reactive({
-    Seattle_Car_Crashes %>% filter(year == input$year)
+    data <- Seattle_Car_Crashes %>% filter(year == input$year)
+    
+    # Calculate total injuries per JUNCTIONTYPE
+    injuries_per_junction <- data %>%
+      group_by(JUNCTIONTYPE) %>%
+      summarise(Total_Injuries = sum(INJURIES)) %>%
+      arrange(desc(Total_Injuries)) # Arrange by descending order of total injuries
+
+    # Reorder the JUNCTIONTYPE factor based on the total injuries
+    data$JUNCTIONTYPE <- factor(data$JUNCTIONTYPE, levels = injuries_per_junction$JUNCTIONTYPE)
+    
+    data
   })
   
-  # Output the interactive plot with faceting and improved hover information
+  # Output the interactive plot with faceting and without the legend
   output$crash_plot <- renderPlotly({
-    # Create a faceted plot with custom hover info
+    # Create a faceted plot without a legend
     p <- ggplot(filtered_data(), aes(x = SEVERITYCODE, y = INJURIES, color = JUNCTIONTYPE, shape = JUNCTIONTYPE, text = paste("Severity Code:", SEVERITYCODE, "<br>Number of Injuries:", INJURIES, "<br>Junction Type:", JUNCTIONTYPE))) +
       geom_jitter(size = 4, alpha = 0.5) + # Apply jittering and transparency
-      facet_wrap(~JUNCTIONTYPE) + # Faceting by junction type
+      facet_wrap(~JUNCTIONTYPE, scales = "free_y") + # Faceting by junction type
       scale_shape_manual(values = c(16, 17, 15, 4, 2)) + # Different shapes for junction types
       labs(x = "Severity Level", y = "Number of Injuries") +
       theme_minimal() +
       theme(axis.text.x = element_text(angle = 45, hjust = 1), 
             panel.background = element_rect(fill = "lightgrey"), 
             strip.background = element_rect(fill = "lightblue"), 
-            strip.text = element_text(size = 10))
+            strip.text = element_text(size = 10),
+            legend.position = "none") # Remove the legend
     
     # Convert ggplot object to plotly object to add tooltips
-    plot <- ggplotly(p, tooltip = "text")
-    
-    # Modify the layout to move the legend to the bottom
-    plot <- plot %>% layout(legend = list(orientation = "h", x = 0.5, xanchor = "center", y = -0.3, yanchor = "top"))
-    
-    plot
+    ggplotly(p, tooltip = "text")
   })
 }
 
