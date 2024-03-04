@@ -349,16 +349,18 @@ server <- function(input, output) {
     Seattle_Car_Crashes %>% filter(year == input$year)
   })
   
-  # Output the interactive plot with jittering and transparency
+  # Output the interactive plot with faceting and improved hover information
   output$crash_plot <- renderPlotly({
-    p <- ggplot(filtered_data(), aes(x = SEVERITYCODE, y = INJURIES, color = JUNCTIONTYPE, shape = JUNCTIONTYPE)) +
-      geom_jitter(size = 4, alpha = 0.5, width = 0.3, height = 0.3) + # Apply jittering and transparency
+    # Create a faceted plot with custom hover info
+    p <- ggplot(filtered_data(), aes(x = SEVERITYCODE, y = INJURIES, color = JUNCTIONTYPE, shape = JUNCTIONTYPE, text = paste("Severity Code:", SEVERITYCODE, "<br>Number of Injuries:", INJURIES, "<br>Junction Type:", JUNCTIONTYPE))) +
+      geom_jitter(size = 4, alpha = 0.5) + # Apply jittering and transparency
+      facet_wrap(~JUNCTIONTYPE) + # Faceting by junction type
       scale_shape_manual(values = c(16, 17, 15, 4, 2)) + # Different shapes for junction types
-      labs(x = "Severity Level", y = "Number of Injuries", color = "Junction Type", shape = "Junction Type") +
+      labs(x = "Severity Level", y = "Number of Injuries") +
       theme_minimal() +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1), panel.background = element_rect(fill = "lightgrey")) +
-      guides(color = guide_legend(override.aes = list(alpha = 1))) # Ensure legend is not affected by alpha transparency
+      theme(axis.text.x = element_text(angle = 45, hjust = 1), panel.background = element_rect(fill = "lightgrey"), strip.background = element_rect(fill = "lightblue"), strip.text = element_text(size = 10)) # Style facets
     
+    # Convert ggplot object to plotly object to add tooltips
     ggplotly(p, tooltip = "text")
   })
 }
