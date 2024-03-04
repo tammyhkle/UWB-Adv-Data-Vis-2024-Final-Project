@@ -312,11 +312,22 @@ Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
 
 # UI
 ui <- fluidPage(
-  titlePanel("Seattle Car Crashes: # of Injuries and Severity Level at which Junction"),
+  titlePanel("Seattle Car Crashes: Number of Injuries and Severity Level at Junction Types"),
+  
+  # Adding Information about the visualization
   fluidRow(
     column(
       width = 12,
-      plotlyOutput("crash_plot", width = "97%", height = "600px")
+      h3("Visualization Description"),
+      p("This visualization provides insights into the correlation between the number of injuries and the severity level of car crashes at different junction types in Seattle. It aims to highlight the impact of junction type on the severity and outcomes of accidents. Users can explore the data to understand which junction types are most associated with severe accidents."),
+      br(),  # Add a line break for spacing
+    )
+  ),
+  
+  fluidRow(
+    column(
+      width = 12,
+      plotlyOutput("crash_plot", width = "100%", height = "600px")
     )
   )
 )
@@ -328,7 +339,7 @@ server <- function(input, output) {
     p <- ggplot(Seattle_Car_Crashes, aes(x = SEVERITYCODE, y = INJURIES, color = JUNCTIONTYPE, shape = JUNCTIONTYPE)) +
       geom_point(size = 6) + # Increase size for better visibility
       scale_shape_manual(values = c(16, 17, 15, 4, 2)) + # this is to have different shapes
-      labs(x = "Severity Level", y = "# of Injuries", color = "Junction Type", shape = "Junction Type") +
+      labs(x = "Severity Level", y = "Number of Injuries", color = "Junction Type", shape = "Junction Type") +
       theme_minimal() +
       theme(axis.text.x = element_text(angle = 45, hjust = 1), panel.background = element_rect(fill = "lightgrey"))
     
@@ -336,7 +347,7 @@ server <- function(input, output) {
   })
 }
 
-# run the application
+# Run the application
 shinyApp(ui = ui, server = server)
 ```
 
