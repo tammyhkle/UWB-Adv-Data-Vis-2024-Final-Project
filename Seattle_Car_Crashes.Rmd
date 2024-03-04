@@ -6,7 +6,6 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
-    # theme: sandstone
 runtime: shiny
 ---
 
