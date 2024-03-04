@@ -6,7 +6,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
-    theme: sandstone
+    # theme: sandstone
 runtime: shiny
 ---
 
@@ -24,7 +24,6 @@ library(lubridate)
 library(leaflet)
 library(shinythemes) # Load the shinythemes library
 ```
-
 
 About
 ===================================== 
@@ -77,7 +76,8 @@ location <- Seattle_Car_Crashes %>%
   select(LATITUDE,LONGITUDE,LOCATION,INCDATE,COLLISIONTYPE,JUNCTIONTYPE,
          WEATHER,ROADCOND,LIGHTCOND,SEVERITYCODE,year)
 
-ui <- fluidPage(theme = shinytheme("sandstone"),
+ui <- fluidPage(
+    shinythemes::themeSelector(),
   div(style = "margin-top: 50px;", titlePanel("Accident Map")),
   
   fluidRow(
@@ -164,8 +164,8 @@ total_accident <- Seattle_Car_Crashes_Date %>%
   group_by(year, month, WEATHER, ROADCOND) %>%
   summarise(Number_Accidents = n())
 
-ui <- fluidPage(theme = shinytheme("sandstone"),
-
+ui <- fluidPage(
+  shinythemes::themeSelector(),
   div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Weather and Road Conditions by Year")),
   
   # Adding Information about the visualization
@@ -256,7 +256,8 @@ total_accident <- Seattle_Car_Crashes_Date %>%
   summarise(Number_Accidents = n())
 
 # Making the graph interactive
-ui <- fluidPage(theme = shinytheme("sandstone"),
+ui <- fluidPage(
+  shinythemes::themeSelector(),
   
   # Giving the title to the graph
   div(style = "margin-top: 50px;", titlePanel("Car Crashes by Light Condition over Time")),
@@ -339,7 +340,8 @@ Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
   mutate(year = year(INCDATE))  # Add a year column for filtering
 
 # UI
-ui <- fluidPage(theme = shinytheme("sandstone"),
+ui <- fluidPage(
+  shinythemes::themeSelector(),
   div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Number of Injuries and Severity Level at Junction Types")),
   
   # Visualization Description
@@ -430,6 +432,7 @@ Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
 
 # UI for the bubble chart
 ui <- fluidPage(
+  shinythemes::themeSelector(),
   div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Relationship Between Collision Type and Junction Type")),
   
   fluidRow(
