@@ -301,3 +301,58 @@ plot_ly(junction_severity_counts, x = ~JUNCTIONTYPE, y = ~count, type = 'bar', c
 
 
 ```
+
+```{r}
+
+
+# Filter out rows with unknown or irrelevant junction types
+valid_junction_types <- c("At Intersection (but not related to intersection)",
+                          "At Intersection (intersection related)",
+                          "Driveway Junction",
+                          "Mid-Block (but intersection related)",
+                          "Mid-Block (not related to intersection)")
+Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
+  filter(JUNCTIONTYPE %in% valid_junction_types)
+
+# UI
+ui <- fluidPage(
+  titlePanel("Seattle Car Crashes: Relationship Between Function Type, Collision Type, and Severity"),
+  fluidRow(
+    column(
+      width = 12,
+      plotlyOutput("bar_plot", width = "97%", height = "600px")
+    )
+  )
+)
+
+# server logic
+server <- function(input, output) {
+  # Output the interactive plot
+  output$bar_plot <- renderPlotly({
+    # Filter data based on selected year
+    filtered_data <- Seattle_Car_Crashes %>%
+      mutate(year = year(INCDATE)) %>%
+      filter(year == input$year)
+    
+    # Calculate counts of each function type, collision type, and severity level
+    function_collision_severity_counts <- filtered_data %>%
+      group_by(FUNCTIONTYPE, COLLISIONTYPE, SEVERITYCODE) %>%
+      summarise(count = n()) %>%
+      ungroup()
+    
+    # Create a plotly bar chart
+    plot_ly(function_collision_severity_counts, x = ~FUNCTIONTYPE, y = ~count, type = 'bar', color = ~SEVERITYCODE, 
+            text = ~paste("Function Type: ", FUNCTIONTYPE, "<br>Collision Type: ", COLLISIONTYPE, "<br>Count: ", count),
+            hoverinfo = "text") %>%
+      layout(
+        title = paste("Relationship Between Function Type, Collision Type, and Severity in", input$year),
+        xaxis = list(title = 'Function Type', categoryorder = 'total descending'),
+        yaxis = list(title = 'Count'),
+        barmode = 'stack'
+      )
+  })
+}
+
+# run the application
+shinyApp(ui = ui, server = server)
+```
