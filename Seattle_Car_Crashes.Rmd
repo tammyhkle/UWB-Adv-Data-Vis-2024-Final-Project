@@ -149,7 +149,17 @@ total_accident <- Seattle_Car_Crashes_Date %>%
   summarise(Number_Accidents = n())
 
 ui <- fluidPage(
-  titlePanel("Seattle Car Crashes Weather and Road Conditions by Year"),
+  titlePanel("Seattle Car Crashes: Weather and Road Conditions by Year"),
+  
+  # Adding Information about the visualization
+  fluidRow(
+    column(
+      width = 12,
+      h3("Visualization Description"),
+      p("The following scatterplots present a detailed analysis of how weather and road conditions have influenced car accidents over time in Seattle. It aims to determine whether certain combinations of weather and road conditions contribute to accident occurrences. Users have the flexibility to select the desired year for analysis, enabling a focused examination of trends and patterns."),
+      br(),  # Add a line break for spacing
+    )
+  ),
   
   fluidRow(
     column(
