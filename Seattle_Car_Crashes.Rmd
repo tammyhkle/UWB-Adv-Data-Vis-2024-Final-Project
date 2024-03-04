@@ -308,22 +308,32 @@ valid_junction_types <- c("At Intersection (but not related to intersection)",
                           "Mid-Block (but intersection related)",
                           "Mid-Block (not related to intersection)")
 Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
-  filter(JUNCTIONTYPE %in% valid_junction_types)
+  filter(JUNCTIONTYPE %in% valid_junction_types) %>%
+  mutate(year = year(INCDATE))  # Add a year column for filtering
 
 # UI
 ui <- fluidPage(
   titlePanel("Seattle Car Crashes: Number of Injuries and Severity Level at Junction Types"),
   
-  # Adding Information about the visualization
+  # Visualization Description
   fluidRow(
     column(
       width = 12,
       h3("Visualization Description"),
       p("This visualization provides insights into the correlation between the number of injuries and the severity level of car crashes at different junction types in Seattle. It aims to highlight the impact of junction type on the severity and outcomes of accidents. Users can explore the data to understand which junction types are most associated with severe accidents."),
-      br(),  # Add a line break for spacing
+      br()  # Add a line break for spacing
     )
   ),
   
+  # Year selection above the graph
+  fluidRow(
+    column(
+      width = 12,
+      selectInput("year", "Select Year:", choices = unique(Seattle_Car_Crashes$year))
+    )
+  ),
+  
+  # Graph
   fluidRow(
     column(
       width = 12,
@@ -332,13 +342,18 @@ ui <- fluidPage(
   )
 )
 
-# server logic
+# Server logic
 server <- function(input, output) {
+  # Reactive expression to filter data based on selected year
+  filtered_data <- reactive({
+    Seattle_Car_Crashes %>% filter(year == input$year)
+  })
+  
   # Output the interactive plot
   output$crash_plot <- renderPlotly({
-    p <- ggplot(Seattle_Car_Crashes, aes(x = SEVERITYCODE, y = INJURIES, color = JUNCTIONTYPE, shape = JUNCTIONTYPE)) +
+    p <- ggplot(filtered_data(), aes(x = SEVERITYCODE, y = INJURIES, color = JUNCTIONTYPE, shape = JUNCTIONTYPE)) +
       geom_point(size = 6) + # Increase size for better visibility
-      scale_shape_manual(values = c(16, 17, 15, 4, 2)) + # this is to have different shapes
+      scale_shape_manual(values = c(16, 17, 15, 4, 2)) + # Different shapes for junction types
       labs(x = "Severity Level", y = "Number of Injuries", color = "Junction Type", shape = "Junction Type") +
       theme_minimal() +
       theme(axis.text.x = element_text(angle = 45, hjust = 1), panel.background = element_rect(fill = "lightgrey"))
