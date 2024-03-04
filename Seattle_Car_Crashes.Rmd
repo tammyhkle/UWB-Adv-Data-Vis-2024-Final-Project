@@ -66,7 +66,7 @@ datatable(Seattle_Car_Crashes)
 
 ```
 
-Geolocation
+Geolocation Map
 ===================================== 
 
 ```{r GeoLocation}
@@ -137,7 +137,7 @@ shinyApp(ui = ui, server = server)
 ```
 
 
-Scatter
+Road and Weather Condition
 ===================================== 
 
 ```{r Scatter Plot}
@@ -225,7 +225,7 @@ layout(legend = list(orientation = "h"))
 shinyApp(ui = ui, server = server)
 ```
 
-Line
+Light Condition
 ===================================== 
 
 ```{r Line Graph}
@@ -304,7 +304,7 @@ layout(legend = list(orientation = "h"))
 shinyApp(ui = ui, server = server)
 ```
 
-Scatter
+Severity of injuries vs Junction type
 ===================================== 
 
 ```{r Scatter_Plot2}
@@ -387,7 +387,7 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 
-Bar
+Collision type VS Junction type
 ===================================== 
 
 ```{r}
