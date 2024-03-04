@@ -413,7 +413,6 @@ shinyApp(ui = ui, server = server)
 
 
 Collision type VS Junction type
-
 =======
 
 ```{r}
@@ -431,13 +430,12 @@ Seattle_Car_Crashes <- Seattle_Car_Crashes %>%
 
 # UI for the bubble chart
 ui <- fluidPage(
-  
   div(style = "margin-top: 50px;", titlePanel("Seattle Car Crashes: Relationship Between Collision Type and Junction Type")),
   
   fluidRow(
     column(
       width = 12,
-      h3("Visualization Description"),
+      h3("Graph Description"),
       p("This interactive bubble chart illustrates the relationship between junction types and collision types for car crashes in Seattle. Users can select a specific year to analyze the distribution of collision types across different junction types."),
       br()  # Add a line break for spacing
     )
@@ -487,4 +485,3 @@ shinyApp(ui = ui, server = server)
 
 ```
 =======
-
