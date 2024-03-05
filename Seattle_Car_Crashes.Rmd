@@ -57,6 +57,7 @@ In essence, the dashboard seeks to address the challenge of designing an accessi
 
 ##### GitHub Link:
 
+
 Table
 ===================================== 
 
@@ -306,7 +307,8 @@ ui <- fluidPage(
       fluidRow(
         column(
           width = 12,
-          plotlyOutput("plot", width = "150%", height = "600px")
+          #plotlyOutput("plot", width = "150%", height = "600px")
+          plotlyOutput("plot", width = "140%", height = "auto")
         )
       )
     )
@@ -329,17 +331,23 @@ server <- function(input, output) {
        scale_color_manual(values = lightcond_colors) + 
       theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels by 45 degrees
     
-    ggplotly(p, tooltip = "text") %>%
-      layout(
-        legend = list(
-          orientation = "h",
-          x = 0.5, y = -0.15,  # Adjust position of legend
-          traceorder = "normal",  # Keep the order of the legend items as in the plot
-          title = list(text = "Light Condition"),
-          itemwidth = 120  # Adjust width of legend items for readability
-        ),
-        margin = list(l = 50, r = 50, t = 50, b = 50) # Adjust the margins
-      )  
+    ggplotly(p) %>%
+layout(legend = list(orientation = "h"))
+    
+    ggplotly(p, tooltip = "text") 
+    
+    #The code below works sometime, sometime it doesn't
+   # ggplotly(p, tooltip = "text") %>%
+     # layout(
+       # legend = list(
+        #  orientation = "h",
+        #  x = 0.5, y = -0.15,  # Adjust position of legend
+         # traceorder = "normal",  # Keep the order of the legend items as in the plot
+         # title = list(text = "Light Condition"),
+         # itemwidth = 120  # Adjust width of legend items for readability
+       # ),
+       # margin = list(l = 50, r = 50, t = 50, b = 50) # Adjust the margins
+     # )  
 
   })
 }
