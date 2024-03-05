@@ -35,6 +35,7 @@ Seattle's frequent car accidents, often attributed to its grey weather and rainy
 
 ##### Data Table Overview:
 The dashboard begins with a concise overview of the dataset in tabular form, providing users with a foundational understanding of the data used to generate subsequent visualizations.
+The link to access the same data can be found here: https://data-seattlecitygis.opendata.arcgis.com/datasets/SeattleCityGIS::sdot-collisions-all-years-2/about
 
 ##### Temporal Analysis Map:
 A dynamic map illustrates the spatial distribution of car crashes in Seattle over time. Users can observe patterns, hotspots, and temporal trends to gain insights into accident occurrences across different neighborhoods and roadways.
