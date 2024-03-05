@@ -33,6 +33,9 @@ About
 ##### Introduction:
 Seattle's frequent car accidents, often attributed to its grey weather and rainy conditions, prompt the need for a comprehensive understanding of these incidents. This dashboard aims to shed light on car crashes in Seattle from January 1, 2018, to February 8, 2024, using a series of visualizations.
 
+##### Dataset Link:
+The SDOT Collisions All Years dataset encompasses a comprehensive collection of collision data within the Seattle area. Compiled by the Seattle Police Department (SPD) and documented by Traffic Records, this dataset includes various types of collisions, whether they occur at intersections or along road segments. It provides valuable insights into the general locations and attributes associated with these incidents. Access the dataset through the following link: SDOT Collisions All Years https://data-seattlecitygis.opendata.arcgis.com/datasets/SeattleCityGIS::sdot-collisions-all-years-2/about
+
 ##### Data Table Overview:
 The dashboard begins with a concise overview of the dataset in tabular form, providing users with a foundational understanding of the data used to generate subsequent visualizations.
 
@@ -53,9 +56,6 @@ Acknowledging the limitations, it's important to note the absence of data for we
 
 ##### Objective and Impact:
 In essence, the dashboard seeks to address the challenge of designing an accessible platform that synthesizes essential information about car collisions in Seattle. By facilitating a deeper understanding of accident attributes, the dashboard aims to empower auto engineers to implement safety adjustments and policymakers to enact targeted traffic safety measures. Ultimately, the overarching goal is to raise public awareness of the primary factors contributing to car crashes and foster a safer urban environment for all.
-
-##### Dataset Link:
-The SDOT Collisions All Years dataset encompasses a comprehensive collection of collision data within the Seattle area. Compiled by the Seattle Police Department (SPD) and documented by Traffic Records, this dataset includes various types of collisions, whether they occur at intersections or along road segments. It provides valuable insights into the general locations and attributes associated with these incidents. Access the dataset through the following link: SDOT Collisions All Years https://data-seattlecitygis.opendata.arcgis.com/datasets/SeattleCityGIS::sdot-collisions-all-years-2/about
 
 ##### GitHub Link:
 https://github.com/UWB-Adv-Data-Vis-2024-Winter/seattle-car-crashes-srmt.git
