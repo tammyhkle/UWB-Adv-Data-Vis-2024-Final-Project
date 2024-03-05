@@ -57,7 +57,6 @@ In essence, the dashboard seeks to address the challenge of designing an accessi
 ##### Dataset Link:
 The SDOT Collisions All Years dataset encompasses a comprehensive collection of collision data within the Seattle area. Compiled by the Seattle Police Department (SPD) and documented by Traffic Records, this dataset includes various types of collisions, whether they occur at intersections or along road segments. It provides valuable insights into the general locations and attributes associated with these incidents. Access the dataset through the following link: SDOT Collisions All Years https://data-seattlecitygis.opendata.arcgis.com/datasets/SeattleCityGIS::sdot-collisions-all-years-2/about
 
-
 ##### GitHub Link:
 https://github.com/UWB-Adv-Data-Vis-2024-Winter/seattle-car-crashes-srmt.git
 
