@@ -56,6 +56,7 @@ Acknowledging the limitations, it's important to note the absence of data for we
 In essence, the dashboard seeks to address the challenge of designing an accessible platform that synthesizes essential information about car collisions in Seattle. By facilitating a deeper understanding of accident attributes, the dashboard aims to empower auto engineers to implement safety adjustments and policymakers to enact targeted traffic safety measures. Ultimately, the overarching goal is to raise public awareness of the primary factors contributing to car crashes and foster a safer urban environment for all.
 
 ##### GitHub Link:
+https://github.com/UWB-Adv-Data-Vis-2024-Winter/seattle-car-crashes-srmt.git
 
 
 Table
