@@ -1,0 +1,12 @@
+name: Seattle_Car_Crashes
+title: Seattle_Car_Crashes
+username: smrt
+account: smrt
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11403389
+bundleId: 8336519
+url: https://smrt.shinyapps.io/Seattle_Car_Crashes/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
